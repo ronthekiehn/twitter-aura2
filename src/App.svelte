@@ -3,7 +3,7 @@
   import TwitterInput from './lib/TwitterInput.svelte';
   import ColorPalette from './lib/ColorPalette.svelte';
   import Score from './lib/Score.svelte';
-  import UserCard from './UserCard.svelte';
+  import UserCard from './lib/UserCard.svelte';
 
   let username = '';
   let palette = [];
