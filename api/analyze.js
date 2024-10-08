@@ -7,7 +7,7 @@ const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
 const twitterToken = process.env.TWITTER_API_TOKEN;
-const geminiApiKey = process.env.GEMINI_API_KEY;
+const apiKey = process.env.GEMINI_API_KEY;
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
