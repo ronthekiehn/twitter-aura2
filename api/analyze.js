@@ -1,7 +1,7 @@
-const { MongoClient } = require('mongodb');
-const axios = require('axios');
-const { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } = require ("@google/generative-ai");
-const sharp = require('sharp');
+import { MongoClient } from 'mongodb';
+import axios from 'axios';
+import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
+import sharp from 'sharp';
 
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
