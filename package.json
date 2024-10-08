@@ -1,8 +1,7 @@
 {
-  "name": "-frontend",
+  "name": "-twitter-aura2",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -21,6 +20,7 @@
   "dependencies": {
     "@google-ai/generativelanguage": "^2.6.0",
     "axios": "^1.7.7",
-    "mongodb": "^6.9.0"
+    "mongodb": "^6.9.0",
+    "sharp": "^0.33.5"
   }
 }
