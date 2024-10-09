@@ -373,6 +373,7 @@ Yellow Orange,#FFAA33
 
 Using this information, look at the following color palette and write
 one or two words to describe the feeling/aura of the color pallete. 
+Please only write one or two words, no lead up or explanation.
 `;
 
 const uri = process.env.MONGODB_URI;
@@ -454,7 +455,8 @@ export default async (req, res) => {
       const bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
 
       const palette = [profileColor, bannerColor].filter(Boolean);
-
+      
+      console.log(profileColor, bannerColor, palette);
       const beautyScore = Math.random() * 10;
 
       const finalprompt = prompt + palette.join(",")
