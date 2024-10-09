@@ -90,7 +90,7 @@ export default async (req, res) => {
       const text = await response.text();
 
       // Store in MongoDB
-      user = { username, pfp: userData.profile_image_url, palette, score: beautyScore, anlaysis: text };
+      user = { username, pfp: userData.profile_image_url, palette, score: beautyScore, analysis: text };
       await users.insertOne(user);
     }
 
