@@ -448,15 +448,15 @@ export default async (req, res) => {
       });
       
       const userData = socialDataResponse.data;
-      console.log(userData);
-
 
       const profileColor = await extractColors(userData.profile_image_url_https);
       const bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
 
-      const palette = [profileColor, bannerColor].filter(Boolean);
+      const palette = [...new Set([...profileColor, ...bannerColor])]; // Remove duplicates
       
-      console.log(profileColor, bannerColor, palette);
+      console.log('Profile Colors:', profileColor);
+      console.log('Banner Colors:', bannerColor);
+      console.log('Combined Palette:', palette);
       const beautyScore = Math.random() * 10;
 
       const finalprompt = prompt + palette.join(",")
