@@ -1,7 +1,9 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import axios from 'axios';
+import { Client } from "twitter-api-sdk";
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import sharp from 'sharp';
+//import analyze from './analyze.js';
 
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, {
@@ -62,10 +64,14 @@ export default async (req, res) => {
 
     //change this to be if the colors haven't changed
     if (!user) {
-      console.log('no user found');
       // Fetch Twitter profile data
-      const twitterResponse = await axios.get(`https://api.twitter.com/2/users/by/username/${username}?user.fields=profile_image_url,profile_banner_url`, {
-        headers: { 'Authorization': `Bearer ${twitterToken}` }
+      const client = new Client(twitterToken);
+
+      const twitterResponse = await client.users.findUserByUsername(username, {
+        "user.fields": [
+            "profile_banner_url",
+            "profile_image_url"
+        ]
       });
       const userData = twitterResponse.data.data;
       console.log(userData);
