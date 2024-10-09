@@ -13,7 +13,7 @@ export default async (req, res) => {
   console.log("GET /api/getRecent");
   try {
     await client.connect();
-    const database = client.db('twitter');
+    const database = client.db('admin');
     const users = database.collection('users');
     console.log("Connected to the database");
     const recentAnalyses = await users
