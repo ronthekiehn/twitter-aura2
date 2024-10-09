@@ -57,7 +57,7 @@ export default async (req, res) => {
   try {
     console.log("Connecting to the database");
     await client.connect();
-    const database = client.db('admin');
+    const database = client.db('twitter');
     const users = database.collection('users');
     console.log("Connected to the database");
     let user = await users.findOne({ username });
@@ -85,11 +85,11 @@ export default async (req, res) => {
       console.log(palette);
       // Calculate beauty score (simplified)
       const beautyScore = Math.random() * 10;
-
+      console.log(beautyScore);
       // Generate analysis using Gemini API
       const prompt = `analyze these ${palette}`
       const analysis = await model.generateContent(prompt,);
-
+      console.log(analysis);
       // Store in MongoDB
       user = { username, palette, beautyScore, analysis };
       await users.insertOne(user);
