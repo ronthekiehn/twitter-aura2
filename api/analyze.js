@@ -70,8 +70,10 @@ export default async (req, res) => {
       });
       
       const userData = socialDataResponse.data;
+      console.log(userData);
 
-      const profileColor = await extractColors(userData.profile_image_url);
+
+      const profileColor = await extractColors(userData.profile_image_url_https);
       const bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
 
       const palette = [profileColor, bannerColor].filter(Boolean);
@@ -83,10 +85,17 @@ export default async (req, res) => {
             
       );
       const response = await result.response;
-      const text = await response.text();
+      const analysis = await response.text();
 
       // Store in MongoDB
-      user = { username, pfp: userData.profile_image_url, palette, score: beautyScore, analysis: text };
+      user = {
+        screen_name: userData.screen_name,
+        palette,
+        beautyScore,
+        analysis,
+        profileImageUrl: userData.profile_image_url_https,
+        bannerImageUrl: userData.profile_banner_url,
+      };
       await users.insertOne(user);
     }
 

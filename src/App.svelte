@@ -18,22 +18,31 @@
   });
 
   async function handleSubmit() {
-    const response = await fetch(`/api/analyze?username=${username}`);
-    const data = await response.json();
-    palette = data.palette;
-    score = data.beautyScore;
-    analysis = data.analysis;
+    error = null;
+    try {
+      const response = await fetch(`/api/analyze?username=${username}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'An error occurred');
+      }
 
-    currentUser = {
-      username: data.username,
-      profileImageUrl: data.profileImageUrl,
-      bannerImageUrl: data.bannerImageUrl,
-      palette: data.palette,
-      score: data.beautyScore
-    };
+      const data = await response.json();
+      currentUser = {
+        username: data.screen_name,
+        profileImageUrl: data.profileImageUrl,
+        bannerImageUrl: data.bannerImageUrl,
+        palette: data.palette,
+        score: data.beautyScore,
+        analysis: data.analysis,
+      };
 
-    // Add the new analysis to the recent analyses
-    recentAnalyses = [data, ...recentAnalyses.slice(0, 9)];
+      // Add the new analysis to the recent analyses
+      recentAnalyses = [currentUser, ...recentAnalyses.slice(0, 9)];
+    } catch (err) {
+      error = err.message;
+      currentUser = null;
+    }
   }
 </script>
 
@@ -44,7 +53,8 @@
   {#if currentUser}
     <UserCard {...currentUser} />
     <ColorPalette palette={currentUser.palette} />
-    <Score score={currentUser.score} analysis={analysis} />
+    <Score score={currentUser.score} analysis={currentUser.analysis}  />
+    <img src={currentUser.profileImageUrl} alt="">
   {/if}
 
   <h2>Recent Analyses</h2>
