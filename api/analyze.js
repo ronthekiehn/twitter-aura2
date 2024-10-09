@@ -4,7 +4,13 @@ import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/ge
 import sharp from 'sharp';
 
 const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 const twitterToken = process.env.TWITTER_API_TOKEN;
 const apiKey = process.env.GEMINI_API_KEY;
@@ -47,25 +53,27 @@ export default async (req, res) => {
 
   try {
     await client.connect();
-    const database = client.db('twitter_analyzer');
+    const database = client.db('twitter');
     const users = database.collection('users');
 
     let user = await users.findOne({ username });
 
     //change this to be if the colors haven't changed
     if (!user) {
+      console.log('no user found');
       // Fetch Twitter profile data
       const twitterResponse = await axios.get(`https://api.twitter.com/2/users/by/username/${username}?user.fields=profile_image_url,profile_banner_url`, {
         headers: { 'Authorization': `Bearer ${twitterToken}` }
       });
       const userData = twitterResponse.data.data;
-
+      console.log(userData);
       // Extract colors
       const profileColor = await extractColors(userData.profile_image_url);
       const bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
 
       const palette = [profileColor, bannerColor].filter(Boolean);
 
+      console.log(palette);
       // Calculate beauty score (simplified)
       const beautyScore = Math.random() * 10;
 

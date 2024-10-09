@@ -1,14 +1,20 @@
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 export default async (req, res) => {
   try {
     await client.connect();
-    const database = client.db('twitter_analyzer');
+    const database = client.db('twitter');
     const users = database.collection('users');
-
+    console.log("Connected to the database");
     const recentAnalyses = await users
       .find({})
       .sort({ _id: -1 })
