@@ -54,18 +54,17 @@ export default async (req, res) => {
   console.log("GET /api/analyze");
   const { username } = req.query;
   console.log(username);
-  console.log(uri);
-  console.log(twitterToken);
-  console.log(apiKey);
   try {
+    console.log("Connecting to the database");
     await client.connect();
     const database = client.db('twitter');
     const users = database.collection('users');
-
+    console.log("Connected to the database");
     let user = await users.findOne({ username });
 
     //change this to be if the colors haven't changed
     if (!user) {
+      console.log("User not found in database");
       // Fetch Twitter profile data
       const client = new Client(twitterToken);
 

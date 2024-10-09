@@ -11,7 +11,6 @@ const client = new MongoClient(uri, {
 
 export default async (req, res) => {
   console.log("GET /api/getRecent");
-  console.log(uri);
   try {
     await client.connect();
     const database = client.db('twitter');
