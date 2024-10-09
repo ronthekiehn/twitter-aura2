@@ -42,7 +42,7 @@ async function extractColors(imageUrl) {
   return `rgb(${dominant.r}, ${dominant.g}, ${dominant.b})`;
 }
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   const { username } = req.query;
 
   try {

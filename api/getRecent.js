@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   try {
     await client.connect();
     const database = client.db('twitter_analyzer');
