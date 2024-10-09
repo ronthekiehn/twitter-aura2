@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+const { MongoClient, ServerApiVersion } = require('mongodb');
 import axios from 'axios';
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import sharp from 'sharp';
