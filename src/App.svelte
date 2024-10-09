@@ -28,6 +28,7 @@
         username: data.screen_name,
         profileImageUrl: data.profileImageUrl,
         bannerImageUrl: data.bannerImageUrl,
+        profileColor: data.profileColor,
         palette: data.palette,
         score: data.beautyScore,
         analysis: data.analysis,
@@ -45,7 +46,7 @@
   <TwitterInput bind:username on:submit={handleSubmit} />
   
   {#if currentUser}
-    <UserCard {...currentUser} />
+    <ColorPalette palette={currentUser.profileColor} />
     <ColorPalette palette={currentUser.palette} />
     <Score score={currentUser.score} analysis={currentUser.analysis}  />
     <img src={currentUser.profileImageUrl} alt="">
