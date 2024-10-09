@@ -1,6 +1,5 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import axios from 'axios';
-import { Client } from "twitter-api-sdk";
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import sharp from 'sharp';
 //import analyze from './analyze.js';
@@ -14,7 +13,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-const twitterToken = process.env.TWITTER_API_TOKEN;
+const socialDataApiKey = process.env.SOCIALDATA_API_KEY;
 const apiKey = process.env.GEMINI_API_KEY;
 
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -55,25 +54,22 @@ export default async (req, res) => {
   const { username } = req.query;
   console.log(username);
   try {
-    console.log("Connecting to the database");
     await client.connect();
     const database = client.db('twitter');
     const users = database.collection('users');
-    console.log("Connected to the database");
     let user = await users.findOne({ username });
 
     if (!user) {
       console.log("User not found in database");
 
-      const client = new Client(twitterToken);
-
-      const twitterResponse = await client.users.findUserByUsername(username, {
-        "user.fields": [
-            "profile_banner_url",
-            "profile_image_url"
-        ]
+      const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${username}`, {
+        headers: { 
+          'Authorization': `Bearer ${socialDataApiKey}`,
+          'Accept': 'application/json'
+        }
       });
-      const userData = twitterResponse.data;
+      
+      const userData = socialDataResponse.data;
 
       const profileColor = await extractColors(userData.profile_image_url);
       const bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
