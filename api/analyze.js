@@ -49,7 +49,9 @@ async function extractColors(imageUrl) {
 }
 
 export default async (req, res) => {
+  console.log("GET /api/analyze");
   const { username } = req.query;
+  console.log(username);
 
   try {
     await client.connect();
