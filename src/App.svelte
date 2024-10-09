@@ -6,11 +6,8 @@
   import UserCard from './lib/UserCard.svelte';
 
   let username = '';
-  let palette = [];
-  let score = 0;
-  let analysis = '';
-  let recentAnalyses = [];
   let currentUser = null;
+  let recentAnalyses = [];
 
   onMount(async () => {
     const response = await fetch('/api/getRecent');
@@ -18,7 +15,6 @@
   });
 
   async function handleSubmit() {
-    error = null;
     try {
       const response = await fetch(`/api/analyze?username=${username}`);
       
@@ -37,8 +33,6 @@
         analysis: data.analysis,
       };
 
-      // Add the new analysis to the recent analyses
-      recentAnalyses = [currentUser, ...recentAnalyses.slice(0, 9)];
     } catch (err) {
       error = err.message;
       currentUser = null;
