@@ -1,15 +1,17 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
 export default async (req, res) => {
-  const uri = process.env.MONGODB_URI;
-  const client = new MongoClient(uri, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    }
-  });
   console.log("GET /api/getRecent");
+  console.log(uri);
   try {
     await client.connect();
     const database = client.db('twitter');
