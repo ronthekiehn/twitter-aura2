@@ -62,10 +62,9 @@ export default async (req, res) => {
     console.log("Connected to the database");
     let user = await users.findOne({ username });
 
-    //change this to be if the colors haven't changed
     if (!user) {
       console.log("User not found in database");
-      // Fetch Twitter profile data
+
       const client = new Client(twitterToken);
 
       const twitterResponse = await client.users.findUserByUsername(username, {
@@ -74,25 +73,24 @@ export default async (req, res) => {
             "profile_image_url"
         ]
       });
-      console.log(twitterResponse);
       const userData = twitterResponse.data;
-      console.log(userData);
-      // Extract colors
+
       const profileColor = await extractColors(userData.profile_image_url);
       const bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
 
       const palette = [profileColor, bannerColor].filter(Boolean);
 
-      console.log(palette);
-      // Calculate beauty score (simplified)
       const beautyScore = Math.random() * 10;
-      console.log(beautyScore);
-      // Generate analysis using Gemini API
+
       const prompt = `analyze these ${palette}`
-      const analysis = await model.generateContent(prompt,);
-      console.log(analysis);
+      const result = await model.generateContent(prompt,
+            
+      );
+      const response = await result.response;
+      const text = await response.text();
+
       // Store in MongoDB
-      user = { username, palette, beautyScore, analysis };
+      user = { username, pfp: userData.profile_image_url, palette, score: beautyScore, anlaysis: text };
       await users.insertOne(user);
     }
 
