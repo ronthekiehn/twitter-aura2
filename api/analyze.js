@@ -74,7 +74,8 @@ export default async (req, res) => {
             "profile_image_url"
         ]
       });
-      const userData = twitterResponse.data.data;
+      console.log(twitterResponse);
+      const userData = twitterResponse.data;
       console.log(userData);
       // Extract colors
       const profileColor = await extractColors(userData.profile_image_url);
