@@ -5,7 +5,22 @@ import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/ge
 import sharp from 'sharp';
 //import analyze from './analyze.js';
 
-const uri = process.env.MONGODB_URI;
+
+
+async function extractColors(imageUrl) {
+  const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  const buffer = Buffer.from(response.data, 'binary');
+
+  const image = sharp(buffer);
+  const { dominant } = await image.stats();
+
+  return `rgb(${dominant.r}, ${dominant.g}, ${dominant.b})`;
+}
+
+export default async (req, res) => {
+  console.log("GET /api/analyze");
+
+  const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -39,19 +54,6 @@ const safetySettings = [
   ]
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash', safetySettings });
 
-
-async function extractColors(imageUrl) {
-  const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-  const buffer = Buffer.from(response.data, 'binary');
-
-  const image = sharp(buffer);
-  const { dominant } = await image.stats();
-
-  return `rgb(${dominant.r}, ${dominant.g}, ${dominant.b})`;
-}
-
-export default async (req, res) => {
-  console.log("GET /api/analyze");
   const { username } = req.query;
   console.log(username);
 
