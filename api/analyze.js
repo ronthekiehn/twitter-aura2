@@ -374,7 +374,7 @@ Yellow Orange,#FFAA33
 Using this information, look at the following color palette and write
 one or two words to describe the feeling/aura of the color pallete. 
 Be funny and creative, maybe even a little mean.
-Please only write one or two words, no lead up or explanation. Capitalize the first letter of each word.
+Please only write one or two words, no lead up or explanation.
 `;
 
 const uri = process.env.MONGODB_URI;

@@ -46,7 +46,7 @@
       const bg = document.getElementById('background');
       if (bg) {
         bg.style.zIndex = '0';
-        bg.style.backgroundColor = currentUser.profileColor[0];
+        bg.style.backgroundColor = currentUser.bannerColor[0];
         bg.style.opacity = '0.8';
       }
     } catch (err) {
