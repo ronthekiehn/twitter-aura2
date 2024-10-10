@@ -9,22 +9,15 @@
   }
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
+<form on:submit|preventDefault={handleSubmit} class="my-5">
   <input 
     type="text" 
     bind:value={username} 
     placeholder="Enter Twitter username"
     required
+    class="p-2 mr-2 border border-gray-300 rounded"
   />
-  <button type="submit">Analyze</button>
+  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+    Analyze
+  </button>
 </form>
-
-<style>
-  form {
-    margin: 20px 0;
-  }
-  input {
-    padding: 5px;
-    margin-right: 10px;
-  }
-</style>

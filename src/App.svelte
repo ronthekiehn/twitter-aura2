@@ -25,27 +25,36 @@
 
   async function handleSubmit() {
     try {
-      const response = await fetch(`/api/analyze?username=${username}`);
+      // const response = await fetch(`/api/analyze?username=${username}`);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'An error occurred');
-      }
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.error || 'An error occurred');
+      // }
 
-      const data = await response.json();
-      currentUser = {
-        username: data.username,
-        profileImageUrl: data.profileImageUrl,
-        bannerImageUrl: data.bannerImageUrl,
-        profileColor: data.profileColor,
-        bannerColor: data.bannerColor,
-        score: data.beautyScore,
-        analysis: data.analysis,
-      };
+      // const data = await response.json();
+      // currentUser = {
+      //   username: data.username,
+      //   profileImageUrl: data.profileImageUrl,
+      //   bannerImageUrl: data.bannerImageUrl,
+      //   profileColor: data.profileColor,
+      //   bannerColor: data.bannerColor,
+      //   score: data.beautyScore,
+      //   analysis: data.analysis,
+      // };
+
+      currentUser ={
+        username: 'rrawnyy',
+        profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+        bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+        profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+        bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+        score: 10,
+        analysis: 'Goddess'
+      }
      
       const bg = document.getElementById('background');
       if (bg) {
-        bg.style.zIndex = '0';
         bg.style.backgroundColor = currentUser.bannerColor[0];
         bg.style.opacity = '0.8';
       }
@@ -56,130 +65,50 @@
   }
 </script>
 
-<main>
-  <div id="background"></div>
+<main class="flex items-center justify-center min-h-screen text-center p-4 max-w-3xl m-auto">
+  <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center"></div>
+  
   {#if currentUser === null}
-    <h1>Twitter Profile Analyzer</h1>
-    <TwitterInput bind:username on:submit={handleSubmit} />
+    <div class="w-full flex-col">
+      <h1 class="text-6xl font-thin uppercase text-orange-600 mb-8">Twitter Profile Analyzer</h1>
+      <TwitterInput bind:username on:submit={handleSubmit} />
+    <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
+      {#each recentAnalyses as recentAnalysis}
+        <div class="border border-gray-300 p-4 my-4 flex items-center">
+          <span class="mr-4">{recentAnalysis.username}</span>
+          <img class="rounded-full border-3 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
+          <ColorPalette palette={recentAnalysis.profileColor} />
+        </div>
+      {/each}
+    </div>
   {/if}
   
   {#if currentUser}
-    <div class='card'>
-      <div class="images">
-        <img class="banner" src={currentUser.bannerImageUrl} alt="">
-        <div class="info">
-          <img class="pfp" src={currentUser.profileImageUrl} alt="">
-            <span style="font-weight: bold;">@{currentUser.username}</span>
-            <span>&nbsp;your aura gives&nbsp;</span>
-            <span style="font-weight: bold;">{currentUser.analysis.toLowerCase()}</span>
+    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-8 flex flex-col items-center">
+      <div class="mb-6 flex flex-col items-center">
+        <img class="rounded-lg border-2 border-black mb-4 max-w-xl" src={currentUser.bannerImageUrl} alt="Banner">
+        <div class="flex items-center justify-between p-2">
+          <img class="rounded-full border-2 border-black mr-4" src={currentUser.profileImageUrl} alt="Profile">
+          <span class="font-bold">@{currentUser.username}</span>
+          <span class="mx-1"> your aura gives </span>
+          <span class="font-bold">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
-      <span>Beauty: {currentUser.score.toFixed(1)} / 10</span>
-      <div class="palettes">
-        <div class="palet">
-          <span>PFP Palette</span>
+      <span class="mb-4">Beauty: {currentUser.score.toFixed(1)} / 10</span>
+      <div class="flex w-full justify-between items-center">
+        <div>
+          <span class="mb-2">PFP Palette</span>
           <ColorPalette palette={currentUser.profileColor} />
         </div>
-        <div class="palet">
-          <span>Header Palette</span>
+        <div>
+          <span class="mb-2">Header Palette</span>
           <ColorPalette palette={currentUser.bannerColor} />
         </div>
       </div>
     </div>
-    
-  {/if}
-  
-  {#if currentUser === null}
-  <h2>Recent Analyses</h2>
-  {#each recentAnalyses as recentAnalysis}
-    <div class="recent-analysis">
-      <span>{recentAnalysis.username}</span>
-      <img class="pfp" src={recentAnalysis.profileImageUrl} alt="">
-      <ColorPalette palette={recentAnalysis.profileColor} />
-    </div>
-  {/each}
   {/if}
   
   {#if error}
-    <p>{error}</p>
+    <p class="text-red-600 mt-4">{error}</p>
   {/if}
 </main>
-
-<style>
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  #background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    background-size: cover;
-    background-position: center;
-  }
-
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
-  }
-
-  .recent-analysis {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px 0;
-  }
-
-  .pfp {
-    border: 3px solid #000;
-    border-radius: 50%;
-    margin-right: 10px;
-  } 
-  .banner{
-    border: 3px solid #000;
-    border-radius: 10px;
-    max-width: 650px;
-    margin-bottom: 10px;
-  }
-
-  .info{
-    display: flex;
-    padding: 10px;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card{
-    position: relative;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 30px;
-    box-shadow: 0 0px 20px rgba(255, 255, 255, 0.5);
-    border: 3px solid #000;
-    z-index: 1;
-    padding: 30px;
-  }
-  .images{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-
-  .palettes {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-</style>

@@ -2,49 +2,15 @@
   export let palette: Array<string> = [];
 </script>
 
-<div class="palette">
+<div class="flex justify-center my-5 w-[300px]">
   {#each palette as color}
-    <div class="color-box" style="background-color: {color}; width: {300/palette.length}px">
-      <span>{color}</span>
+    <div 
+      class="h-20 flex-1 flex items-end justify-center transition-transform duration-300 hover:scale-x-110 hover:z-10 group first:rounded-l-2xl last:rounded-r-2xl"
+      style="background-color: {color}; width: {300/palette.length}px"
+    >
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-x-90 translate-y-8">
+        {color}
+      </span>
     </div>
   {/each}
 </div>
-
-<style>
-  .palette {
-    display: flex;
-    width: 300;
-    justify-content: center;
-    margin: 20px 0;
-
-  }
-  .color-box {
-    height: 75px;
-    display: flex;
-    flex: 1;
-    flex-basis: 1px;
-    flex-grow: 1;
-    align-items: flex-end;
-    justify-content: center;
-    transition: transform 0.3s;
-  }
-  .color-box:first-child {
-    border-radius: 10px 0 0 10px;
-  }
-  .color-box:last-child {
-    border-radius: 0 10px 10px 0;
-  }
-  .color-box:hover {
-    transform: scaleX(1.2);
-    z-index: 1;
-  }
-  .color-box span {
-    transform: scaleX(0.9) translateY(30px);
-    border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .color-box:hover span {
-    opacity: 1;
-  }
-</style>
