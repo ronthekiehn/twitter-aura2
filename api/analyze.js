@@ -469,7 +469,7 @@ export default async (req, res) => {
 
       // Store in MongoDB
       user = {
-        screen_name: userData.screen_name,
+        username: userData.screen_name,
         profileColor,
         bannerColor,
         beautyScore,

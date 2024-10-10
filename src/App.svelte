@@ -34,7 +34,7 @@
 
       const data = await response.json();
       currentUser = {
-        username: data.screen_name,
+        username: data.username,
         profileImageUrl: data.profileImageUrl,
         bannerImageUrl: data.bannerImageUrl,
         profileColor: data.profileColor,
@@ -71,7 +71,7 @@
           <img class="pfp" src={currentUser.profileImageUrl} alt="">
             <span style="font-weight: bold;">@{currentUser.username}</span>
             <span>&nbsp;your aura gives&nbsp;</span>
-            <span style="font-weight: bold;">{currentUser.analysis}</span>
+            <span style="font-weight: bold;">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
       <span>Beauty: {currentUser.score.toFixed(1)} / 10</span>
