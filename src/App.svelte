@@ -140,6 +140,7 @@
   .pfp {
     border: 3px solid #000;
     border-radius: 50%;
+    margin-right: 10px;
   } 
   .banner{
     border: 3px solid #000;
