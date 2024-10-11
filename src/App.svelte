@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
   import TwitterInput from './lib/TwitterInput.svelte';
   import ColorPalette from './lib/ColorPalette.svelte';
 
@@ -17,6 +18,7 @@
   let currentUser: User | null = null;
   let recentAnalyses = [];
   let error = '';
+  let loading = false;
 
   onMount(async () => {
     const response = await fetch('/api/getRecent');
@@ -24,6 +26,8 @@
   });
 
   async function handleSubmit() {
+    loading = true;
+    error = '';
     try {
       // const response = await fetch(`/api/analyze?username=${username}`);
       
@@ -42,7 +46,7 @@
       //   score: data.beautyScore,
       //   analysis: data.analysis,
       // };
-
+      await new Promise(resolve => setTimeout(resolve, 2000));
       currentUser ={
         username: 'rrawnyy',
         profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
@@ -61,30 +65,39 @@
     } catch (err) {
       error = err.message;
       currentUser = null;
+    } finally {
+      loading = false;
     }
   }
 </script>
 
-<main class="flex items-center justify-center min-h-screen text-center p-4 max-w-3xl m-auto">
+<main class="flex items-center justify-center min-h-screen text-center p-4 m-auto">
   <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center"></div>
   
-  {#if currentUser === null}
+  {#if loading}
+      <div class="fixed animate-spin text-5xl origin-left">Loading</div>
+  {/if}
+
+  {#if currentUser === null && !loading}
     <div class="w-full flex-col">
-      <h1 class="text-6xl font-thin uppercase text-orange-600 mb-8">Twitter Profile Analyzer</h1>
+      <h1 class="text-6xl mb-8">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
-    <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
-      {#each recentAnalyses as recentAnalysis}
-        <div class="border border-gray-300 p-4 my-4 flex items-center">
-          <span class="mr-4">{recentAnalysis.username}</span>
-          <img class="rounded-full border-3 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
-          <ColorPalette palette={recentAnalysis.profileColor} />
-        </div>
-      {/each}
+      <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {#each recentAnalyses as recentAnalysis}
+          <div class="border border-gray-300 p-4 my-4 flex items-center">
+            <span class="mr-4">{recentAnalysis.username}</span>
+            <img class="rounded-full border-3 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
+            <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
+          </div>
+        {/each}
+      </div>
+      
     </div>
   {/if}
   
   {#if currentUser}
-    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-8 flex flex-col items-center">
+    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-8 flex flex-col items-center transition duration-300" transition:fade>
       <div class="mb-6 flex flex-col items-center">
         <img class="rounded-lg border-2 border-black mb-4 max-w-xl" src={currentUser.bannerImageUrl} alt="Banner">
         <div class="flex items-center justify-between p-2">

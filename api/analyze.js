@@ -412,20 +412,88 @@ const safetySettings = [
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash', safetySettings });
 
 
-  async function extractColors(imageUrl) {
+  function colorDistance(color1, color2) {
+    const [r1, g1, b1] = color1;
+    const [r2, g2, b2] = color2;
+    return Math.sqrt(Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2));
+}
+
+// Function to filter out similar colors from the palette
+function filterSimilarColors(colors, threshold = 30) {
+    const filteredColors = [];
+    
+    colors.forEach(color => {
+        let isSimilar = false;
+        
+        for (const filteredColor of filteredColors) {
+            if (colorDistance(color, filteredColor) < threshold) {
+                isSimilar = true;
+                break;
+            }
+        }
+
+        if (!isSimilar) {
+            filteredColors.push(color);
+        }
+    });
+
+    return filteredColors;
+}
+
+async function extractColors(imageUrl) {
     try {
-    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    const buffer = await sharp(Buffer.from(response.data))
-        .resize(100)
-        .toBuffer();
-      const colorPalette = await getPalette(buffer);
-      return colorPalette.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
-      
+        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+        const buffer = await sharp(Buffer.from(response.data))
+            .resize(100)
+            .toBuffer();
+        const colorPalette = await getPalette(buffer, 10);
+        
+        // Filter out similar colors
+        const filteredPalette = filterSimilarColors(colorPalette);
+        return filteredPalette;
     } catch (error) {
-      console.error('Error extracting colors:', error);
-      return [];
+        console.error('Error extracting colors:', error);
+        return [];
+    }
+}
+
+function calculateScore(value, min, max) {
+    if (value < min) {
+      return 5 * (value / min);
+    } else if (value > max) {
+      return 10 - 5 * ((value - max) / max);
+    } else {
+      return 5 + 5 * ((value - min) / (max - min));
     }
   }
+
+function getHarmonyScore(colors) {
+    let totalDistance = 0;
+    let comparisons = 0;
+
+    // Compare each color with every other color
+    for (let i = 0; i < colors.length; i++) {
+        for (let j = i + 1; j < colors.length; j++) {
+            totalDistance += colorDistance(colors[i], colors[j]);
+            comparisons++;
+        }
+    }
+
+    const avgDistance = totalDistance / comparisons;
+    // Calculate the average distance
+    const idealNumColors = { min: 12, max: 16 };
+    const idealAvgDistance = { min: 70, max: 180 };
+
+    // Calculate scores for number of colors and average distance
+    let numColorsScore = calculateScore(colors.length, idealNumColors.min, idealNumColors.max);
+    let avgDistanceScore = calculateScore(avgDistance, idealAvgDistance.min, idealAvgDistance.max);
+    // Calculate final score (average of the two scores)
+    let finalScore = (numColorsScore + avgDistanceScore) / 2;
+
+    // Round the final score to one decimal place
+    return Math.max(1, Math.min(10, Math.round(finalScore * 10) / 10));
+
+}
 
 
 export default async (req, res) => {
@@ -438,47 +506,51 @@ export default async (req, res) => {
     const users = database.collection('users');
     let user = await users.findOne({ username });
 
-    if (!user) {
-      console.log("User not found in database");
+    const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${username}`, {
+      headers: { 
+        'Authorization': `Bearer ${socialDataApiKey}`,
+        'Accept': 'application/json'
+      }
+    });
+    
+    const userData = socialDataResponse.data;
 
-      const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${username}`, {
-        headers: { 
-          'Authorization': `Bearer ${socialDataApiKey}`,
-          'Accept': 'application/json'
-        }
-      });
-      
-      const userData = socialDataResponse.data;
+    let profileColor = await extractColors(userData.profile_image_url_https);
+    let bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
+    
+    // Combine the two color palettes
+    const rgbcolors = [...new Set([...profileColor, ...bannerColor])];
 
-      const profileColor = await extractColors(userData.profile_image_url_https);
-      const bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
+    profileColor = profileColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
+    pannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
+    //map to hex
+    const palette = rgbcolors.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
 
-      const palette = [...new Set([...profileColor, ...bannerColor])]; // Remove duplicates
-      
-      console.log('Profile Colors:', profileColor);
-      console.log('Banner Colors:', bannerColor);
-      console.log('Combined Palette:', palette);
-      const beautyScore = Math.random() * 10;
-
-      const finalprompt = prompt + palette.join(",")
-      const result = await model.generateContent(finalprompt,
-            
-      );
-      const response = await result.response;
-      const analysis = await response.text();
-
-      // Store in MongoDB
-      user = {
-        username: userData.screen_name,
-        profileColor,
-        bannerColor,
-        beautyScore,
-        analysis,
-        profileImageUrl: userData.profile_image_url_https,
-        bannerImageUrl: userData.profile_banner_url,
-      };
-      await users.insertOne(user);
+    //if the user hasn't change their profile, keep everything the same
+    if (user && user.profileColor === profileColor && user.bannerColor === bannerColor) {
+      res.status(200).json(user);
+      return
     }
+
+    const beautyScore = getHarmonyScore(rgbcolors);
+
+
+    const finalprompt = prompt + palette.join(",")
+    const result = await model.generateContent(finalprompt,);
+    const response = await result.response;
+    const analysis = await response.text();
+
+    // Store in MongoDB
+    user = {
+      username: userData.screen_name,
+      profileColor,
+      bannerColor,
+      beautyScore,
+      analysis,
+      profileImageUrl: userData.profile_image_url_https,
+      bannerImageUrl: userData.profile_banner_url,
+    };
+    await users.insertOne(user);
 
     res.status(200).json(user);
   } catch (error) {

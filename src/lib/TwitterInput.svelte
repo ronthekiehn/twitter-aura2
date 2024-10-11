@@ -13,7 +13,7 @@
   <input 
     type="text" 
     bind:value={username} 
-    placeholder="Enter Twitter username"
+    placeholder="Twitter username"
     required
     class="p-2 mr-2 border border-gray-300 rounded"
   />

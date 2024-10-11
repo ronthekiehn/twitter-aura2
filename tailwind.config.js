@@ -5,11 +5,7 @@ export default {
     "./src/**/*.{svelte,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {
-      fontFamily: {
-       'mono': ['ui-monospace', 'SFMono-Regular']
-      }
-    },
+    extend: {},
   },
   plugins: [],
 }
