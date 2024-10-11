@@ -85,9 +85,9 @@
       <h1 class="text-6xl mb-8">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
       <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
-      <div>
+      <div class="flex">
         {#each recentAnalyses as recentAnalysis}
-          <div class="border border-gray-300 p-4 my-4 max-w-48 flex items-center">
+          <div class="border-black border-4 shadow-md p-4 my-4 max-w-48 flex items-center rounded">
             <div class="flex items-center ">
               <span class="mr-4">@{recentAnalysis.username}</span>
               <img class="rounded-full border-2 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
@@ -123,7 +123,15 @@
         </div>
       </div>
     </div>
-    <button class="mt-8 p-2 bg-white border-black border-4 text-black rounded-lg hover:bg-slate-100 transition-colors" on:click={() => currentUser = null}>
+    <button class="mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors"
+     on:click={() => {
+      currentUser = null;
+      const bg = document.getElementById('background');
+      if (bg) {
+        bg.style.backgroundColor = 'white';
+        bg.style.opacity = '1';
+      }
+    }}>
       Go Back
     </button>
   {/if}
