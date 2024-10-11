@@ -85,9 +85,9 @@
       <h1 class="text-6xl mb-8">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
       <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
-      <div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         {#each recentAnalyses as recentAnalysis}
-          <div class="border border-gray-300 p-4 my-4 flex-row items-center">
+          <div class="border border-gray-300 p-4 my-4 w-36 flex items-center">
             <div class="flex">
               <span class="mr-4">{recentAnalysis.username}</span>
               <img class="rounded-full border-3 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
@@ -107,7 +107,7 @@
         <div class="flex items-center justify-between p-2">
           <img class="rounded-full border-2 border-black mr-4" src={currentUser.profileImageUrl} alt="Profile">
           <span class="font-bold">@{currentUser.username}</span>
-          <span class="mx-1"> your aura gives </span>
+          <span class="mx-2"> your aura gives </span>
           <span class="font-bold">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
