@@ -17,7 +17,7 @@
   
   let currentUser: User | null = null;
   let recentAnalyses = [];
-  let error = 'ERROR';
+  let error = '';
   let loading = false;
 
   onMount(async () => {
@@ -74,7 +74,7 @@
 </script>
 
 <main class="flex flex-col items-center justify-center min-h-screen text-center p-4 m-auto">
-  <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center"></div>
+  <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center" class:bg-white={currentUser}></div>
   
   {#if loading}
       <div class="fixed animate-spin text-5xl origin-left">Loading</div>
@@ -87,9 +87,9 @@
       <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
       <div>
         {#each recentAnalyses as recentAnalysis}
-          <div class="border border-gray-300 p-4 my-4 w-36 flex items-center">
-            <div class="flex">
-              <span class="mr-4">{recentAnalysis.username}</span>
+          <div class="border border-gray-300 p-4 my-4 max-w-48 flex items-center">
+            <div class="flex items-center ">
+              <span class="mr-4">@{recentAnalysis.username}</span>
               <img class="rounded-full border-2 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
             </div>
             <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
