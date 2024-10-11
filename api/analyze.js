@@ -480,14 +480,13 @@ function getHarmonyScore(colors) {
 
     const avgDistance = totalDistance / comparisons;
     // Calculate the average distance
-    const idealNumColors = { min: 12, max: 16 };
-    const idealAvgDistance = { min: 70, max: 180 };
+    const idealNumColors = { min: 13, max: 18 };
+    const idealAvgDistance = { min: 60, max: 170 };
 
     // Calculate scores for number of colors and average distance
     let numColorsScore = calculateScore(colors.length, idealNumColors.min, idealNumColors.max);
     let avgDistanceScore = calculateScore(avgDistance, idealAvgDistance.min, idealAvgDistance.max);
 
-    console.log(numColorsScore, avgDistanceScore, avgDistance, colors.length);
     // Calculate final score (average of the two scores)
     let finalScore = (numColorsScore + avgDistanceScore) / 2;
 
