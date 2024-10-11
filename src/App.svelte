@@ -97,14 +97,14 @@
   <div class="fixed flex flex-col items-start top-2 left-2">
     <div class='flex items-center justify-center'>
       <span class="text-xs">made by</span>
-      <img src={pfp} class="rounded-full border-2 border-black w-8 h-8 mb-2 mx-2" alt="pfp">
-       <a class="font-bold underline text-xs" target="_blank" href="https://x.com/rrawnyy">@rrawnyy</a>
+      <img src={pfp} class="rounded-full border-2 border-black w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 mb-2 mx-2" alt="pfp">
+      <a class="font-bold underline text-xs" target="_blank" href="https://x.com/rrawnyy">@rrawnyy</a>
     </div>
-    <div class='flex my-2'>
+    <div class='flex my-1 sm:my-2'>
       <span class="text-xs mr-2">inspired by</span>
-      <a class="font-bold underline text-xs" target="_blank" href="https://www.auralized.com/">auralized dot com</a>
+      <a class="font-bold underline text-xs " target="_blank" href="https://www.auralized.com/">auralized dot com</a>
     </div>
-    <div class='flex my-2'>
+    <div class='flex my-1 sm:my-2'>
       <span class="text-xs mr-2">view the</span>
       <a class="font-bold underline text-xs" target="_blank" href="https://github.com/ronthekiehn/twitter-aura2">code</a>
     </div>
@@ -127,7 +127,7 @@
     <h2 class="absolute bottom-48 md:bottom-60 text-md sm:text-xl font-bold mt-6 sm:mt-8">Recent Analyses</h2>
     <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
       {#each recentAnalyses as recentAnalysis}
-        <div class="border-black border-4 shadow-md p-2 sm:p-3 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
+        <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-8 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
           <div class="flex items-center justify-center">
             <span class="mr-2 sm:mr-3 md:mr-4 text-sm sm:text-base">@{recentAnalysis.username}</span>
             <img class="rounded-full border-2 border-black w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
