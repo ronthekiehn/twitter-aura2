@@ -25,12 +25,23 @@
 
 
   onMount(async () => {
-    await getRecentAnalyses();
+    try {
+      await getRecentAnalyses();
+    } catch (err) {
+      error = 'Failed to fetch recent analyses';
+    }
   });
 
   async function getRecentAnalyses() {
-    const response = await fetch('/api/getRecent');
-    recentAnalyses = await response.json();
+    try {
+      const response = await fetch('/api/getRecent');
+      if (!response.ok) {
+        throw new Error('Failed to fetch recent analyses');
+      }
+      recentAnalyses = await response.json();
+    } catch (err) {
+      error = err.message;
+    }
   }
 
   async function handleSubmit() {
