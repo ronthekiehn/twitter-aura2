@@ -67,7 +67,7 @@
         analysis: data.analysis,
       };
 
-     // for testing purposes
+     //for testing purposes
       // await new Promise(resolve => setTimeout(resolve, 100));
       // currentUser ={
       //   username: 'rrawnyy',
@@ -76,7 +76,7 @@
       //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
       //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
       //   score: 10,
-      //   analysis: 'Goddess'
+      //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
       // }
      
       const bg = document.getElementById('background');
@@ -143,11 +143,11 @@
     <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center transition duration-300 w-full max-w-xl lg:max-w-2xl" in:fade={{ delay: 100 }}>
       <div class="mb-4 sm:mb-6 flex flex-col items-center w-full">
         <img class="rounded-lg border-4 border-black mb-4 w-full" src={currentUser.bannerImageUrl} alt="Banner">
-        <div class="flex items-center p-2">
-          <img class="rounded-full border-4 border-black mr-2 sm:mr-4 w-12 h-12 sm:w-16 sm:h-16" src={currentUser.profileImageUrl} alt="Profile">
-          <span class="font-bold text-xs sm:text-sm ">@{currentUser.username}</span>
-          <span class="mx-1 sm:mx-2 text-xs sm:text-sm ">your aura gives</span>
-          <span class="font-bold text-xs sm:text-sm">{currentUser.analysis.toLowerCase()}</span>
+        <div class="flex flex-col sm:flex-row items-center p-2">
+          <img class="rounded-full border-4 border-black mr-2 sm:mr-4 w-12 h-12 sm:w-16 sm:h-16 my-2" src={currentUser.profileImageUrl} alt="Profile">
+          <span class="font-bold text-sm">@{currentUser.username}</span>
+          <span class="mx-1 sm:mx-2 text-sm my-2">your aura gives</span>
+          <span class="font-bold text-sm">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
       <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(1)} / 10</span>
