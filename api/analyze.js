@@ -522,7 +522,7 @@ export default async (req, res) => {
     const rgbcolors = [...new Set([...profileColor, ...bannerColor])];
 
     profileColor = profileColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
-    pannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
+    bannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
     //map to hex
     const palette = rgbcolors.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
 
