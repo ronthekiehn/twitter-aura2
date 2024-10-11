@@ -87,7 +87,7 @@
       <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
       <div class="flex">
         {#each recentAnalyses as recentAnalysis}
-          <div class="border-black border-4 shadow-md p-4 my-4 max-w-48 flex flex-col items-center rounded">
+          <div class="border-black border-4 shadow-md p-4 my-4 max-w-48 flex flex-col items-center rounded-lg mx-2">
             <div class="flex items-center ">
               <span class="mr-4">@{recentAnalysis.username}</span>
               <img class="rounded-full border-2 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
