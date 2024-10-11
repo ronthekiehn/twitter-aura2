@@ -85,7 +85,7 @@
       <h1 class="text-6xl mb-8">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
       <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
         {#each recentAnalyses as recentAnalysis}
           <div class="border border-gray-300 p-4 my-4 w-36 flex items-center">
             <div class="flex">

@@ -526,8 +526,9 @@ export default async (req, res) => {
     //map to hex
     const palette = rgbcolors.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
 
-
-    console.log(profileColor, bannerColor, user.profileColor, user.bannerColor);
+    if (user) {
+      console.log(profileColor, bannerColor, user.profileColor, user.bannerColor);
+    }
     //if the user hasn't change their profile, keep everything the same
     if (user && user.profileColor === profileColor && user.bannerColor === bannerColor) {
       res.status(200).json(user);
