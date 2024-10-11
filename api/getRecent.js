@@ -19,7 +19,7 @@ export default async (req, res) => {
     const recentAnalyses = await users
       .find({})
       .sort({ _id: -1 })
-      .limit(10)
+      .limit(15)
       .toArray();
 
     res.status(200).json(recentAnalyses);

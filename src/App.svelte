@@ -4,6 +4,8 @@
   import TwitterInput from './lib/TwitterInput.svelte';
   import ColorPalette from './lib/ColorPalette.svelte';
 
+  import pfp from './assets/rawnypfp.jpg';
+
   let username = '';
   interface User {
     username: string;
@@ -20,10 +22,16 @@
   let error = '';
   let loading = false;
 
+
+
   onMount(async () => {
+    await getRecentAnalyses();
+  });
+
+  async function getRecentAnalyses() {
     const response = await fetch('/api/getRecent');
     recentAnalyses = await response.json();
-  });
+  }
 
   async function handleSubmit() {
     loading = true;
@@ -48,16 +56,16 @@
       };
 
      // for testing purposes
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // currentUser ={
-      //   username: 'rrawnyy',
-      //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-      //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-      //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-      //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-      //   score: 10,
-      //   analysis: 'Goddess'
-      // }
+      await new Promise(resolve => setTimeout(resolve, 100));
+      currentUser ={
+        username: 'rrawnyy',
+        profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+        bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+        profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+        bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+        score: 10,
+        analysis: 'Goddess'
+      }
      
       const bg = document.getElementById('background');
       if (bg) {
@@ -74,59 +82,78 @@
 </script>
 
 <main class="flex flex-col items-center justify-center min-h-screen text-center p-4 m-auto">
+  <div class="fixed flex flex-col items-start top-2 left-2">
+    <div class='flex items-center justify-center'>
+      <span class="text-xs">made by</span>
+      <img src={pfp} class="rounded-full border-2 border-black w-8 h-8 mb-2 mx-2" alt="pfp">
+       <a class="font-bold underline text-xs" target="_blank" href="https://x.com/rrawnyy">@rrawnyy</a>
+    </div>
+    <div class='flex my-2'>
+      <span class="text-xs mr-2">inspired by</span>
+      <a class="font-bold underline text-xs" target="_blank" href="https://www.auralized.com/">auralized dot com</a>
+    </div>
+    <div class='flex my-2'>
+      <span class="text-xs mr-2">view the</span>
+      <a class="font-bold underline text-xs" target="_blank" href="https://github.com/ronthekiehn/twitter-aura2">code</a>
+    </div>
+      
+  </div>
+  
+
   <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center" class:bg-white={currentUser}></div>
   
   {#if loading}
-      <div class="fixed animate-spin text-5xl origin-left">Loading</div>
+      <div class="fixed animate-spin text-3xl sm:text-4xl md:text-5xl origin-left">Loading</div>
   {/if}
 
   {#if currentUser === null && !loading}
-    <div class="w-full flex-col">
-      <h1 class="text-6xl mb-8">WHAT COLOR IS YOUR AURA</h1>
+    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 mb-24 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
+      <h1 class="text-xl sm:text-lg md:text-2xl mb-4 md:mb-8">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
-      <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
+    </div>  
 
-      <div class="flex absolute bottom-3">
-        {#each recentAnalyses as recentAnalysis}
-          <div class="border-black border-4 shadow-md p-4 my-4 max-w-48 flex flex-col items-center rounded-lg mx-2">
-            <div class="flex items-center ">
-              <span class="mr-4">@{recentAnalysis.username}</span>
-              <img class="rounded-full border-2 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
-            </div>
-            <ColorPalette size={150} height={40} palette={recentAnalysis.profileColor} />
+    <h2 class="absolute bottom-48 md:bottom-60 text-md sm:text-xl font-bold mt-6 sm:mt-8">Recent Analyses</h2>
+    <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
+      {#each recentAnalyses as recentAnalysis}
+        <div class="border-black border-4 shadow-md p-2 sm:p-3 md:p-4 my-2 flex flex-col items-center rounded-3xl mx-2">
+          <div class="flex items-center justify-center">
+            <span class="mr-2 sm:mr-3 md:mr-4 text-sm sm:text-base">@{recentAnalysis.username}</span>
+            <img class="rounded-full border-2 border-black w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
           </div>
-        {/each}
-      </div>
-      
+          <span class="mb-2 text-sm sm:text-base">{recentAnalysis.score.toFixed(1)} / 10</span>
+          <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
+        </div>
+      {/each}
     </div>
   {/if}
   
   {#if currentUser}
-    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-8 flex flex-col items-center transition duration-300" in:fade={{ delay: 100 }}>
-      <div class="mb-6 flex flex-col items-center">
-        <img class="rounded-lg border-4 border-black mb-4 max-w-xl" src={currentUser.bannerImageUrl} alt="Banner">
-        <div class="flex items-center justify-between p-2">
-          <img class="rounded-full border-4 border-black mr-4" src={currentUser.profileImageUrl} alt="Profile">
-          <span class="font-bold">@{currentUser.username}</span>
-          <span class="mx-2"> your aura gives </span>
-          <span class="font-bold">{currentUser.analysis.toLowerCase()}</span>
+    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center transition duration-300 w-full max-w-xl lg:max-w-2xl" in:fade={{ delay: 100 }}>
+      <div class="mb-4 sm:mb-6 flex flex-col items-center w-full">
+        <img class="rounded-lg border-4 border-black mb-4 w-full" src={currentUser.bannerImageUrl} alt="Banner">
+        <div class="flex items-center p-2">
+          <img class="rounded-full border-4 border-black mr-2 sm:mr-4 w-12 h-12 sm:w-16 sm:h-16" src={currentUser.profileImageUrl} alt="Profile">
+          <span class="font-bold text-sm sm:text-base ">@{currentUser.username}</span>
+          <span class="mx-1 sm:mx-2 text-sm sm:text-base ">your aura gives</span>
+          <span class="font-bold text-sm sm:text-base">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
-      <span class="mb-4">Beauty: {currentUser.score.toFixed(1)} / 10</span>
-      <div class="flex w-full justify-between items-center">
-        <div>
-          <span class="mb-2">PFP Palette</span>
+      <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(1)} / 10</span>
+      <div class="flex flex-col sm:flex-row justify-between items-center">
+        <div class="mb-3 sm:mb-0">
+          <span class="mb-1 sm:mb-2 text-sm sm:text-base">PFP Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.profileColor} />
         </div>
         <div>
-          <span class="mb-2">Header Palette</span>
+          <span class="mb-1 sm:mb-2 text-sm sm:text-base">Header Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.bannerColor} />
         </div>
       </div>
     </div>
-    <button class="mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors"
+    <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
      on:click={() => {
       currentUser = null;
+      getRecentAnalyses();
       const bg = document.getElementById('background');
       if (bg) {
         bg.style.backgroundColor = 'white';
@@ -138,6 +165,6 @@
   {/if}
   
   {#if error}
-    <p class="text-red-600 mt-4">{error}</p>
+    <p class="text-red-600 mt-4 text-sm sm:text-base">{error}</p>
   {/if}
 </main>

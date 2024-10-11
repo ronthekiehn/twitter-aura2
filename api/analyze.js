@@ -208,7 +208,6 @@ Coral,#FF7F50
 Coral Pink,#F88379
 Crimson,#DC143C
 Dark Pink,#AA336A
-Dusty Rose,#C9A9A6
 Fuchsia,#FF00FF
 Hot Pink,#FF69B4
 Light Pink,#FFB6C1
@@ -487,6 +486,8 @@ function getHarmonyScore(colors) {
     // Calculate scores for number of colors and average distance
     let numColorsScore = calculateScore(colors.length, idealNumColors.min, idealNumColors.max);
     let avgDistanceScore = calculateScore(avgDistance, idealAvgDistance.min, idealAvgDistance.max);
+
+    console.log(numColorsScore, avgDistanceScore, avgDistance, colors.length);
     // Calculate final score (average of the two scores)
     let finalScore = (numColorsScore + avgDistanceScore) / 2;
 
