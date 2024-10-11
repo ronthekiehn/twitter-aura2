@@ -56,16 +56,16 @@
       };
 
      // for testing purposes
-      await new Promise(resolve => setTimeout(resolve, 100));
-      currentUser ={
-        username: 'rrawnyy',
-        profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-        bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-        profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-        bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-        score: 10,
-        analysis: 'Goddess'
-      }
+      // await new Promise(resolve => setTimeout(resolve, 100));
+      // currentUser ={
+      //   username: 'rrawnyy',
+      //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+      //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+      //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+      //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+      //   score: 10,
+      //   analysis: 'Goddess'
+      // }
      
       const bg = document.getElementById('background');
       if (bg) {
