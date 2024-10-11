@@ -145,9 +145,9 @@
         <img class="rounded-lg border-4 border-black mb-4 w-full" src={currentUser.bannerImageUrl} alt="Banner">
         <div class="flex items-center p-2">
           <img class="rounded-full border-4 border-black mr-2 sm:mr-4 w-12 h-12 sm:w-16 sm:h-16" src={currentUser.profileImageUrl} alt="Profile">
-          <span class="font-bold text-sm sm:text-base ">@{currentUser.username}</span>
-          <span class="mx-1 sm:mx-2 text-sm sm:text-base ">your aura gives</span>
-          <span class="font-bold text-sm sm:text-base">{currentUser.analysis.toLowerCase()}</span>
+          <span class="font-bold text-xs sm:text-sm ">@{currentUser.username}</span>
+          <span class="mx-1 sm:mx-2 text-xs sm:text-sm ">your aura gives</span>
+          <span class="font-bold text-xs sm:text-sm">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
       <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(1)} / 10</span>
