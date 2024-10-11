@@ -85,14 +85,15 @@
       <h1 class="text-6xl mb-8">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
       <h2 class="text-2xl font-bold mt-8 mb-4">Recent Analyses</h2>
-      <div class="flex">
+
+      <div class="flex absolute bottom-3">
         {#each recentAnalyses as recentAnalysis}
           <div class="border-black border-4 shadow-md p-4 my-4 max-w-48 flex flex-col items-center rounded-lg mx-2">
             <div class="flex items-center ">
               <span class="mr-4">@{recentAnalysis.username}</span>
               <img class="rounded-full border-2 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
             </div>
-            <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
+            <ColorPalette size={150} height={40} palette={recentAnalysis.profileColor} />
           </div>
         {/each}
       </div>
