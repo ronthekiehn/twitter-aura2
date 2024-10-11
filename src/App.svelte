@@ -39,6 +39,7 @@
         throw new Error('Failed to fetch recent analyses');
       }
       recentAnalyses = await response.json();
+      console.log(recentAnalyses);
     } catch (err) {
       error = err.message;
     }
@@ -131,7 +132,7 @@
             <span class="mr-2 sm:mr-3 md:mr-4 text-sm sm:text-base">@{recentAnalysis.username}</span>
             <img class="rounded-full border-2 border-black w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
           </div>
-          <span class="mb-2 text-sm sm:text-base">{recentAnalysis.score.toFixed(1)} / 10</span>
+          <span class="mb-2 text-sm sm:text-base">{recentAnalysis.beautyScore.toFixed(1)} / 10</span>
           <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
         </div>
       {/each}
