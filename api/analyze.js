@@ -530,9 +530,14 @@ export default async (req, res) => {
       console.log(profileColor, bannerColor, user.profileColor, user.bannerColor);
     }
     //if the user hasn't change their profile, keep everything the same
-    if (user && user.profileColor === profileColor && user.bannerColor === bannerColor) {
-      res.status(200).json(user);
-      return
+    if (user){
+      if (user.profileColor.length === profileColor.length && user.bannerColor.length === bannerColor.length
+        && user.profileColor.every((color, index) => color === profileColor[index])
+        && user.bannerColor.every((color, index) => color === bannerColor[index])) {
+            console.log("User has not changed their profile");
+            res.status(200).json(user);
+            return
+    }
     }
 
     const beautyScore = getHarmonyScore(rgbcolors);

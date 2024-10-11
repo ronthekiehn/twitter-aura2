@@ -17,7 +17,7 @@
   
   let currentUser: User | null = null;
   let recentAnalyses = [];
-  let error = '';
+  let error = 'ERROR';
   let loading = false;
 
   onMount(async () => {
@@ -47,8 +47,8 @@
         analysis: data.analysis,
       };
 
-      //for testing purposes
-      // await new Promise(resolve => setTimeout(resolve, 2000));
+     // for testing purposes
+      // await new Promise(resolve => setTimeout(resolve, 100));
       // currentUser ={
       //   username: 'rrawnyy',
       //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
@@ -73,7 +73,7 @@
   }
 </script>
 
-<main class="flex items-center justify-center min-h-screen text-center p-4 m-auto">
+<main class="flex flex-col items-center justify-center min-h-screen text-center p-4 m-auto">
   <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center"></div>
   
   {#if loading}
@@ -90,7 +90,7 @@
           <div class="border border-gray-300 p-4 my-4 w-36 flex items-center">
             <div class="flex">
               <span class="mr-4">{recentAnalysis.username}</span>
-              <img class="rounded-full border-3 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
+              <img class="rounded-full border-2 border-black mr-4" src={recentAnalysis.profileImageUrl} alt="Profile">
             </div>
             <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
           </div>
@@ -101,11 +101,11 @@
   {/if}
   
   {#if currentUser}
-    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-8 flex flex-col items-center transition duration-300" transition:fade>
+    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-8 flex flex-col items-center transition duration-300" in:fade={{ delay: 100 }}>
       <div class="mb-6 flex flex-col items-center">
-        <img class="rounded-lg border-2 border-black mb-4 max-w-xl" src={currentUser.bannerImageUrl} alt="Banner">
+        <img class="rounded-lg border-4 border-black mb-4 max-w-xl" src={currentUser.bannerImageUrl} alt="Banner">
         <div class="flex items-center justify-between p-2">
-          <img class="rounded-full border-2 border-black mr-4" src={currentUser.profileImageUrl} alt="Profile">
+          <img class="rounded-full border-4 border-black mr-4" src={currentUser.profileImageUrl} alt="Profile">
           <span class="font-bold">@{currentUser.username}</span>
           <span class="mx-2"> your aura gives </span>
           <span class="font-bold">{currentUser.analysis.toLowerCase()}</span>
@@ -115,14 +115,17 @@
       <div class="flex w-full justify-between items-center">
         <div>
           <span class="mb-2">PFP Palette</span>
-          <ColorPalette palette={currentUser.profileColor} />
+          <ColorPalette size={250} height={75} palette={currentUser.profileColor} />
         </div>
         <div>
           <span class="mb-2">Header Palette</span>
-          <ColorPalette palette={currentUser.bannerColor} />
+          <ColorPalette size={250} height={75} palette={currentUser.bannerColor} />
         </div>
       </div>
     </div>
+    <button class="mt-8 p-2 bg-white border-black border-4 text-black rounded-lg hover:bg-slate-100 transition-colors" on:click={() => currentUser = null}>
+      Go Back
+    </button>
   {/if}
   
   {#if error}
