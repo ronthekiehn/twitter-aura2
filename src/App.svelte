@@ -124,10 +124,10 @@
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>  
 
-    <h2 class="absolute bottom-48 md:bottom-60 text-md sm:text-xl font-bold mt-6 sm:mt-8">Recent Analyses</h2>
+    <h2 class="absolute bottom-48 md:bottom-72 text-md sm:text-xl font-bold mt-6 sm:mt-8">Recent Analyses</h2>
     <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
       {#each recentAnalyses as recentAnalysis}
-        <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-8 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
+        <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
           <div class="flex items-center justify-center">
             <span class="mr-2 sm:mr-3 md:mr-4 text-sm sm:text-base">@{recentAnalysis.username}</span>
             <img class="rounded-full border-2 border-black w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
