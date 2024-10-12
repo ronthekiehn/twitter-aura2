@@ -17,6 +17,8 @@
     score: number;
     analysis: string;
   }
+
+  let copied = false;
   
   let currentUser: User | null = null;
   let recentAnalyses = [];
@@ -70,15 +72,15 @@
     };
 
      //for testing purposes
-     //await new Promise(resolve => setTimeout(resolve, 100));
-     //currentUser ={
-     //  username: 'rrawnyy',
-     //  profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-      // bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-     //  profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-     //  bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-     //  score: 10,
-     //  analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
+    //  await new Promise(resolve => setTimeout(resolve, 100));
+    //  currentUser ={
+    //   username: 'rrawnyy',
+    //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+    //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+    //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+    //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+    //   score: 10,
+    //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
     //  }
      
       const bg = document.getElementById('background');
@@ -118,11 +120,7 @@ async function handleShare() {
     // Step 3: Copy Blob to Clipboard
     const clipboardItem = new ClipboardItem({ 'image/png': blob });
     await navigator.clipboard.write([clipboardItem]);
-    console.log('Image copied to clipboard!');
-
-    // Step 4: Open the tweet intent URL
-    const tweetText = `Check out my Twitter Aura! Score: ${currentUser.score.toFixed(1)}/10 #TwitterAura`;
-
+    copied = true;
 
   } catch (err) {
   if (err.name === 'NotAllowedError' && err.message.includes('Document is not focused')) {
@@ -210,6 +208,9 @@ async function handleShare() {
     <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
      on:click={() => {
       currentUser = null;
+      copied = false;
+      error = '';
+      resultDiv = null;
       getRecentAnalyses();
       const bg = document.getElementById('background');
       if (bg) {
@@ -219,7 +220,7 @@ async function handleShare() {
     }}>
       Go Back
     </button>
-    <TwitterShareButton currentUser={currentUser} disabled={!resultDiv} on:click={handleShare} />
+    <TwitterShareButton disabled={!resultDiv} copied={copied} on:click={handleShare} />
     </div>
     
   {/if}
