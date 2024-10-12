@@ -3,8 +3,9 @@
   import { fade } from 'svelte/transition';
   import TwitterInput from './lib/TwitterInput.svelte';
   import ColorPalette from './lib/ColorPalette.svelte';
-
+  import TwitterShareButton from './lib/TwitterShareButton.svelte';
   import pfp from './assets/rawnypfp.jpg';
+  import html2canvas from 'html2canvas';
 
   let username = '';
   interface User {
@@ -21,6 +22,7 @@
   let recentAnalyses = [];
   let error = '';
   let loading = false;
+  let resultDiv: HTMLElement | null = null; // Reference to the result div
 
 
 
@@ -56,28 +58,28 @@
         throw new Error(errorData.error || 'An error occurred');
       }
 
-      const data = await response.json();
-      currentUser = {
-        username: data.username,
-        profileImageUrl: data.profileImageUrl,
-        bannerImageUrl: data.bannerImageUrl,
-        profileColor: data.profileColor,
-        bannerColor: data.bannerColor,
-        score: data.beautyScore,
-        analysis: data.analysis,
-      };
+      //const data = await response.json();
+      //currentUser = {
+      //  username: data.username,
+      //  profileImageUrl: data.profileImageUrl,
+      //  bannerImageUrl: data.bannerImageUrl,
+      //  profileColor: data.profileColor,
+      //  bannerColor: data.bannerColor,
+      //  score: data.beautyScore,
+      //  analysis: data.analysis,
+      //};
 
      //for testing purposes
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // currentUser ={
-      //   username: 'rrawnyy',
-      //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-      //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-      //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-      //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-      //   score: 10,
-      //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
-      // }
+     await new Promise(resolve => setTimeout(resolve, 100));
+     currentUser ={
+       username: 'rrawnyy',
+       profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+       bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+       profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+       bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+       score: 10,
+       analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
+     }
      
       const bg = document.getElementById('background');
       if (bg) {
@@ -91,6 +93,48 @@
       loading = false;
     }
   }
+
+
+async function handleShare() {
+  if (!currentUser || !resultDiv) return;
+
+  try {
+    // Step 1: Capture the canvas
+    const canvas = await html2canvas(resultDiv, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+
+    // Step 2: Convert canvas to PNG Blob
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), 'image/png');
+    });
+
+    if (!blob) {
+      throw new Error('Failed to generate PNG image');
+    }
+
+    // Step 3: Copy Blob to Clipboard
+    const clipboardItem = new ClipboardItem({ 'image/png': blob });
+    await navigator.clipboard.write([clipboardItem]);
+    console.log('Image copied to clipboard!');
+
+    // Step 4: Open the tweet intent URL
+    const tweetText = `Check out my Twitter Aura! Score: ${currentUser.score.toFixed(1)}/10 #TwitterAura`;
+
+
+  } catch (err) {
+  if (err.name === 'NotAllowedError' && err.message.includes('Document is not focused')) {
+    console.warn('Clipboard warning (image may still have copied):', err);
+  } else {
+    console.error('Failed to generate or share image:', err);
+    error = 'Failed to generate image for sharing';
+  }
+}
+}
+
+
 </script>
 
 <main class="flex flex-col items-center justify-center min-h-screen text-center p-4 m-auto">
@@ -140,7 +184,7 @@
   {/if}
   
   {#if currentUser}
-    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center transition duration-300 w-full max-w-xl lg:max-w-2xl" in:fade={{ delay: 100 }}>
+    <div bind:this={resultDiv} class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center transition duration-300 w-full max-w-xl lg:max-w-2xl" in:fade={{ delay: 100 }}>
       <div class="mb-4 sm:mb-6 flex flex-col items-center w-full">
         <img class="rounded-lg border-4 border-black mb-4 w-full" src={currentUser.bannerImageUrl} alt="Banner">
         <div class="flex flex-col sm:flex-row items-center p-2">
@@ -162,6 +206,7 @@
         </div>
       </div>
     </div>
+    <div class="d-flex">
     <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
      on:click={() => {
       currentUser = null;
@@ -174,6 +219,9 @@
     }}>
       Go Back
     </button>
+    <TwitterShareButton currentUser={currentUser} disabled={!resultDiv} on:click={handleShare} />
+    </div>
+    
   {/if}
   
   {#if error}
