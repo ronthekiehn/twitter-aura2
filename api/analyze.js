@@ -512,7 +512,6 @@ export default async (req, res) => {
         'Accept': 'application/json'
       }
     });
-    console.log(socialDataResponse.data);
     
     const userData = socialDataResponse.data;
 
