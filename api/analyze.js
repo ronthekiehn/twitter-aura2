@@ -372,7 +372,7 @@ Yellow Orange,#FFAA33
 
 Using this information, look at the following color palette and write
 one or two words to describe the feeling/aura of the color pallete. 
-Be funny and creative, maybe even a little mean.
+Be funny and creative, maybe even a little mean. Don't say dusty.
 Please only write one or two words, no lead up or explanation.
 `;
 
