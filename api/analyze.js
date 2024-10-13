@@ -569,7 +569,11 @@ export default async (req, res) => {
     //   console.error(user.username, "failed to analyze");
     // }
     console.error(error);
-    res.status(500).json({ error: 'An error occurred' });
+    if (error.response && error.response.status === 429) {
+      res.status(429).json({ error: 'Hitting the rate limit, please wait a minute or so' });
+    } else {
+      res.status(500).json({ error: 'An error occurred' });
+    }
   } finally {
     await client.close();
   }
