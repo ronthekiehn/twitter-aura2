@@ -108,67 +108,40 @@
       logging: false,
     });
 
-    // Step 2: Convert canvas to PNG Blob
-    const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob((blob) => resolve(blob), 'image/png');
-    });
+    // Step 2: Try to copy to clipboard (will work on desktop)
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
+      });
 
-    if (!blob) {
-      throw new Error('Failed to generate PNG image');
-    }
-
-    // Step 3: Try to copy to clipboard (will work on desktop)
-    if (navigator.clipboard && navigator.clipboard.write) {
-      try {
-        const clipboardItem = new ClipboardItem({ 'image/png': blob });
-        await navigator.clipboard.write([clipboardItem]);
-        copied = true;
-        console.log('Image copied to clipboard');
-        return; // Exit function if clipboard write was successful
-      } catch (clipboardError) {
-        console.warn('Clipboard write failed, falling back to share/download:', clipboardError);
+      if (!blob) {
+        throw new Error('Failed to generate PNG image');
       }
-    }
 
-    // Step 4: Fallback for mobile devices
-    if (navigator.share) {
-      // Create a File from the Blob for sharing
-      const file = new File([blob], 'shared-image.png', { type: 'image/png' });
+      const clipboardItem = new ClipboardItem({ 'image/png': blob });
+      await navigator.clipboard.write([clipboardItem]);
+      copied = true;
+      console.log('Image copied to clipboard');
+    } catch (clipboardError) {
+      console.warn('Clipboard write failed, opening image in new tab:', clipboardError);
       
-      try {
-        await navigator.share({
-          files: [file],
-          title: 'Shared Image',
-          text: 'Check out this image!',
-        });
-        console.log('Image shared successfully');
-      } catch (shareError) {
-        console.warn('Share failed:', shareError);
-        // Fallback to download if share is cancelled or fails
-        handleDownload(blob);
+      // Fallback: Open canvas in new tab
+      const imageUrl = canvas.toDataURL('image/png');
+      const newTab = window.open();
+      if (newTab) {
+        newTab.document.write('<img src="' + imageUrl + '" alt="Shared Image"/>');
+        newTab.document.close();
+        console.log('Image opened in new tab');
+      } else {
+        console.error('Failed to open new tab. Pop-ups might be blocked.');
+        error = 'Failed to open image. Please allow pop-ups and try again.';
       }
-    } else {
-      // Fallback to download for browsers that don't support share
-      handleDownload(blob);
     }
 
   } catch (err) {
     console.error('Failed to generate or share image:', err);
     error = 'Failed to generate image for sharing';
   }
-}
-
-// Helper function to handle download as last resort
-function handleDownload(blob) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'shared-image.png';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-  console.log('Image download initiated');
 }
 
 </script>
