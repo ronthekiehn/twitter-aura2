@@ -505,6 +505,11 @@ export default async (req, res) => {
     const database = client.db('twitter');
     const users = database.collection('users');
     let user = await users.findOne({ username });
+    if (user){
+      console.log("user found - no repeat requests");
+      res.status(200).json(user);
+      return
+    }
 
     const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${username}`, {
       headers: { 
