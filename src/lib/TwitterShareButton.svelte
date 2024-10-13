@@ -3,7 +3,7 @@
   //import { fade } from 'svelte/transition';
 
   export let disabled;
-  export let copied = false;
+  export let copied = 0;
   //export let currentUser;
   const dispatch = createEventDispatcher();
 
@@ -27,10 +27,14 @@
   class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
   {disabled}
 >
-  {#if copied}
+  {#if copied == 0}
+    Share
+  {:else if copied == 1}
     Copied!
+  {:else if copied == 2}
+    Downloaded!
   {:else}
-    Copy 
+    Error
   {/if}
 </button>
 

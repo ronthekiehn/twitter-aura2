@@ -18,7 +18,7 @@
     analysis: string;
   }
 
-  let copied = false;
+  let copied = 0;
   
   let currentUser: User | null = null;
   let recentAnalyses = [];
@@ -120,7 +120,7 @@
 
       const clipboardItem = new ClipboardItem({ 'image/png': blob });
       await navigator.clipboard.write([clipboardItem]);
-      copied = true;
+      copied = 1;
       console.log('Image copied to clipboard');
     } catch (clipboardError) {
       console.warn('Clipboard write failed, opening image in new tab:', clipboardError);
@@ -129,6 +129,7 @@
       const imageUrl = canvas.toDataURL('image/png');
       const newTab = window.open();
       if (newTab) {
+        copied = 2;
         newTab.document.write('<img src="' + imageUrl + '" alt="Shared Image"/>');
         newTab.document.close();
         console.log('Image opened in new tab');
@@ -219,7 +220,7 @@
     <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
      on:click={() => {
       currentUser = null;
-      copied = false;
+      copied = 0;
       error = '';
       resultDiv = null;
       getRecentAnalyses();
