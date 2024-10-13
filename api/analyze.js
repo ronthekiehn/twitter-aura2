@@ -560,9 +560,9 @@ export default async (req, res) => {
     console.log(user.username, "successfully analyzed");
     res.status(200).json(user);
   } catch (error) {
-    if (user){
-      console.error(user.username, "failed to analyze");
-    }
+    // if (user){
+    //   console.error(user.username, "failed to analyze");
+    // }
     console.error(error);
     res.status(500).json({ error: 'An error occurred' });
   } finally {
