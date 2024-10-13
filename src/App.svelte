@@ -118,32 +118,57 @@
     }
 
     // Step 3: Try to copy to clipboard (will work on desktop)
-    try {
-      const clipboardItem = new ClipboardItem({ 'image/png': blob });
-      await navigator.clipboard.write([clipboardItem]);
-      copied = true;
-      console.log('Image copied to clipboard');
-    } catch (clipboardError) {
-      console.warn('Clipboard write failed, falling back to download:', clipboardError);
+    if (navigator.clipboard && navigator.clipboard.write) {
+      try {
+        const clipboardItem = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([clipboardItem]);
+        copied = true;
+        console.log('Image copied to clipboard');
+        return; // Exit function if clipboard write was successful
+      } catch (clipboardError) {
+        console.warn('Clipboard write failed, falling back to share/download:', clipboardError);
+      }
+    }
+
+    // Step 4: Fallback for mobile devices
+    if (navigator.share) {
+      // Create a File from the Blob for sharing
+      const file = new File([blob], 'shared-image.png', { type: 'image/png' });
       
-      // Fallback for mobile: Create a download link
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'shared-image.png';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      copied = true;
-      console.log('Image download initiated');
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'Shared Image',
+          text: 'Check out this image!',
+        });
+        console.log('Image shared successfully');
+      } catch (shareError) {
+        console.warn('Share failed:', shareError);
+        // Fallback to download if share is cancelled or fails
+        handleDownload(blob);
+      }
+    } else {
+      // Fallback to download for browsers that don't support share
+      handleDownload(blob);
     }
 
   } catch (err) {
     console.error('Failed to generate or share image:', err);
     error = 'Failed to generate image for sharing';
   }
+}
+
+// Helper function to handle download as last resort
+function handleDownload(blob) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'shared-image.png';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  console.log('Image download initiated');
 }
 
 </script>
