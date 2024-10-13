@@ -97,7 +97,7 @@
   }
 
 
-async function handleShare() {
+  async function handleShare() {
   if (!currentUser || !resultDiv) return;
 
   try {
@@ -117,21 +117,34 @@ async function handleShare() {
       throw new Error('Failed to generate PNG image');
     }
 
-    // Step 3: Copy Blob to Clipboard
-    const clipboardItem = new ClipboardItem({ 'image/png': blob });
-    await navigator.clipboard.write([clipboardItem]);
-    copied = true;
+    // Step 3: Try to copy to clipboard (will work on desktop)
+    try {
+      const clipboardItem = new ClipboardItem({ 'image/png': blob });
+      await navigator.clipboard.write([clipboardItem]);
+      copied = true;
+      console.log('Image copied to clipboard');
+    } catch (clipboardError) {
+      console.warn('Clipboard write failed, falling back to download:', clipboardError);
+      
+      // Fallback for mobile: Create a download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'shared-image.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      copied = true;
+      console.log('Image download initiated');
+    }
 
   } catch (err) {
-  if (err.name === 'NotAllowedError' && err.message.includes('Document is not focused')) {
-    console.warn('Clipboard warning (image may still have copied):', err);
-  } else {
     console.error('Failed to generate or share image:', err);
     error = 'Failed to generate image for sharing';
   }
 }
-}
-
 
 </script>
 
