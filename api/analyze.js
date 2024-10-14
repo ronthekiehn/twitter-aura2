@@ -524,6 +524,18 @@ export default async (req, res) => {
 
     let profileColor = await extractColors(userData.profile_image_url_https);
     let bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
+
+    if (user){
+      if (
+        userData.profile_image_url_https === user.profileImageUrl &&
+        userData.profile_banner_url === user.bannerImageUrl
+      ) {
+            console.log("User has not changed their profile");
+            res.status(200).json(user);
+            return
+      }
+    }
+
     let rgbcolors;
     if (bannerColor){
       rgbcolors = [...new Set([...profileColor, ...bannerColor])];
@@ -539,19 +551,7 @@ export default async (req, res) => {
     const beautyScore = getHarmonyScore(rgbcolors);
 
     //if the user hasn't change their profile, keep everything the same
-    if (user){
-      if (
-        profileColor.length === user.profileColor.length
-      ) {
-            console.log("User has not changed their profile");
-            await users.updateOne(
-              { username: userData.screen_name },
-              { $set: { beautyScore } }
-            );
-            res.status(200).json(user);
-            return
-      }
-    }
+   
 
     const finalprompt = prompt + palette.join(",")
     const result = await model.generateContent(finalprompt,);
