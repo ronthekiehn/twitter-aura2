@@ -492,7 +492,7 @@ function getHarmonyScore(colors) {
     let finalScore = (numColorsScore + avgDistanceScore) / 2;
 
     // Round the final score to one decimal place
-    return Math.max(1, Math.min(10, Math.round(finalScore * 10) / 10));
+    return finalScore;
 
 }
 
@@ -523,12 +523,15 @@ export default async (req, res) => {
 
     let profileColor = await extractColors(userData.profile_image_url_https);
     let bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
-    
-    // Combine the two color palettes
-    const rgbcolors = [...new Set([...profileColor, ...bannerColor])];
+    let rgbcolors;
+    if (bannerColor){
+      rgbcolors = [...new Set([...profileColor, ...bannerColor])];
+      bannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
+    } else {
+      rgbcolors = profileColor;
+    }
 
     profileColor = profileColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
-    bannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
     //map to hex
     const palette = rgbcolors.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
 

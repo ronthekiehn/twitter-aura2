@@ -53,35 +53,35 @@
     loading = true;
     error = '';
     try {
-      const response = await fetch(`/api/analyze?username=${username}`);
+    //   const response = await fetch(`/api/analyze?username=${username}`);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'An error occurred');
-      }
+    //   if (!response.ok) {
+    //     const errorData = await response.json();
+    //     throw new Error(errorData.error || 'An error occurred');
+    //   }
 
-    const data = await response.json();
-    currentUser = {
-      username: data.username,
-      profileImageUrl: data.profileImageUrl,
-       bannerImageUrl: data.bannerImageUrl,
-      profileColor: data.profileColor,
-      bannerColor: data.bannerColor,
-      score: data.beautyScore,
-      analysis: data.analysis,
-    };
+    // const data = await response.json();
+    // currentUser = {
+    //   username: data.username,
+    //   profileImageUrl: data.profileImageUrl,
+    //    bannerImageUrl: data.bannerImageUrl,
+    //   profileColor: data.profileColor,
+    //   bannerColor: data.bannerColor,
+    //   score: data.beautyScore,
+    //   analysis: data.analysis,
+    // };
 
      //for testing purposes
-    //  await new Promise(resolve => setTimeout(resolve, 100));
-    //  currentUser ={
-    //   username: 'rrawnyy',
-    //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-    //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-    //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-    //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-    //   score: 10,
-    //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
-    //  }
+     await new Promise(resolve => setTimeout(resolve, 100));
+     currentUser ={
+      username: 'rrawnyy',
+      profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+      bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+      profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+      bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+      score: 10,
+      analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
+     }
      
       const bg = document.getElementById('background');
       if (bg) {
@@ -186,7 +186,7 @@
             <span class="mr-2 sm:mr-3 md:mr-4 text-sm sm:text-base">@{recentAnalysis.username}</span>
             <img class="rounded-full border-2 border-black w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
           </div>
-          <span class="mb-2 text-sm sm:text-base">{recentAnalysis.beautyScore.toFixed(1)} / 10</span>
+          <span class="mb-2 text-m sm:text-sm">{recentAnalysis.beautyScore.toFixed(2)} / 10</span>
           <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
         </div>
       {/each}
@@ -204,37 +204,45 @@
           <span class="font-bold text-sm">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
-      <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(1)} / 10</span>
+      <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(2)} / 10</span>
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
           <span class="mb-1 sm:mb-2 text-sm sm:text-base">PFP Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.profileColor} />
         </div>
+        {#if currentUser.bannerColor}
         <div>
           <span class="mb-1 sm:mb-2 text-sm sm:text-base">Header Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.bannerColor} />
         </div>
+        {/if}
       </div>
     </div>
-    <div class="d-flex">
-    <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
-     on:click={() => {
-      currentUser = null;
-      copied = 0;
-      error = '';
-      resultDiv = null;
-      getRecentAnalyses();
-      const bg = document.getElementById('background');
-      if (bg) {
-        bg.style.backgroundColor = 'white';
-        bg.style.opacity = '1';
-      }
-    }}>
-      Go Back
-    </button>
-    <TwitterShareButton disabled={!resultDiv} copied={copied} on:click={handleShare} />
+    <div class="flex space-x-2">
+        <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+        on:click={() => {
+          currentUser = null;
+          copied = 0;
+          error = '';
+          resultDiv = null;
+          getRecentAnalyses();
+          const bg = document.getElementById('background');
+          if (bg) {
+            bg.style.backgroundColor = 'white';
+            bg.style.opacity = '1';
+          }
+        }}>
+          Go Back
+        </button>
+        <TwitterShareButton disabled={!resultDiv} copied={copied} on:click={handleShare} />
+        <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+        on:click={() => window.open('https://buymeacoffee.com/ronthekiehn', '_blank')}
+        >
+          Donate
+        </button>
     </div>
-    
+
+  
   {/if}
   
   {#if error}
