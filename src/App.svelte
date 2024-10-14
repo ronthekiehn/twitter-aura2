@@ -231,7 +231,7 @@
     </div>  
 
     <button
-    class="my-1 md:my-4 p-1 md:p-1 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+    class="my-1 md:my-4 p-1 md:p-1 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base"
     on:click={() => showLeaderboard = !showLeaderboard}
       >
         {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
@@ -241,15 +241,15 @@
       <Leaderboard />
     {:else}
 
-    <h2 class="text-base md:text-md font-bold">Recent Analyses</h2>
+    <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
     <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
       {#each recentAnalyses as recentAnalysis}
         <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
           <div class="flex items-center justify-center">
-            <span class="mr-2 sm:mr-3 md:mr-4 text-sm sm:text-base">@{recentAnalysis.username}</span>
-            <img class="rounded-full border-2 border-black w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
+            <span class="mr-2 sm:mr-3 md:mr-4 text-xs md:text-base">@{recentAnalysis.username}</span>
+            <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
           </div>
-          <span class="mb-2 text-m sm:text-sm">{recentAnalysis.beautyScore.toFixed(2)} / 10</span>
+          <span class="mb-2 text-sm md:text-base">{recentAnalysis.beautyScore.toFixed(2)} / 10</span>
           <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
         </div>
       {/each}
@@ -268,23 +268,23 @@
           <span class="font-bold text-sm">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
-      <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(2)} / 10</span>
-      <span class="mb-1 sm:mb-2 text-sm sm:text-base">Ranking: {ranking}</span>
+      <span class="mb-1 sm:mb-2 text-sm md:text-base-">Beauty: {currentUser.score.toFixed(2)} / 10</span>
+      <span class="mb-1 sm:mb-2 text-sm md:text-base">Ranking: {ranking}</span>
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
-          <span class="mb-1 sm:mb-2 text-sm sm:text-base">PFP Palette</span>
+          <span class="mb-1 sm:mb-2 text-sm md:text-base">PFP Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.profileColor} />
         </div>
         {#if currentUser.bannerColor}
         <div>
-          <span class="mb-1 sm:mb-2 text-sm sm:text-base">Header Palette</span>
+          <span class="mb-1 sm:mb-2 text-sm md:text-base">Header Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.bannerColor} />
         </div>
         {/if}
       </div>
     </div>
     <div class="flex space-x-2">
-        <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+        <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
         on:click={() => {
           currentUser = null;
           copied = 0;
@@ -301,7 +301,7 @@
           Go Back
         </button>
         <TwitterShareButton disabled={!resultDiv} copied={copied} on:click={handleShare} />
-        <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+        <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
         on:click={() => window.open('https://buymeacoffee.com/ronthekiehn', '_blank')}
         >
           Donate
@@ -312,6 +312,6 @@
   {/if}
   
   {#if error}
-    <p class="text-red-600 mt-4 text-sm sm:text-base">{error}</p>
+    <p class="text-red-600 mt-4 text-sm md:text-base">{error}</p>
   {/if}
 </main>
