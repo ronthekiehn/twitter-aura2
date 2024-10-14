@@ -541,8 +541,7 @@ export default async (req, res) => {
     //if the user hasn't change their profile, keep everything the same
     if (user){
       if (
-        profileColor.length === user.profileColor.length &&
-        bannerColor.length === user.bannerColor.length
+        profileColor.length === user.profileColor.length
       ) {
             console.log("User has not changed their profile");
             await users.updateOne(
