@@ -249,7 +249,7 @@
             <span class="mr-2 sm:mr-3 md:mr-4 text-xs md:text-base">@{recentAnalysis.username}</span>
             <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
           </div>
-          <span class="mb-2 text-sm md:text-base">{recentAnalysis.beautyScore.toFixed(2)} / 10</span>
+          <span class="mb-2 text-sm md:text-base">{recentAnalysis.beautyScore.toFixed(3)} / 10</span>
           <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
         </div>
       {/each}
@@ -268,7 +268,7 @@
           <span class="font-bold text-sm">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
-      <span class="mb-1 sm:mb-2 text-sm md:text-base-">Beauty: {currentUser.score.toFixed(2)} / 10</span>
+      <span class="mb-1 sm:mb-2 text-sm md:text-base-">Beauty: {currentUser.score.toFixed(3)} / 10</span>
       <span class="mb-1 sm:mb-2 text-sm md:text-base">Ranking: {ranking}</span>
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
