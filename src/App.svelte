@@ -242,7 +242,7 @@
     {:else}
 
     <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
-    <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
+    <div class="my-1 flex max-w-full overflow-auto no-scrollbar">
       {#each recentAnalyses as recentAnalysis}
         <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
           <div class="flex items-center justify-center">
