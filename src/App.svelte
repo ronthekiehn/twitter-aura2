@@ -4,6 +4,7 @@
   import TwitterInput from './lib/TwitterInput.svelte';
   import ColorPalette from './lib/ColorPalette.svelte';
   import TwitterShareButton from './lib/TwitterShareButton.svelte';
+  import Leaderboard from './lib/Leaderboard.svelte';
   import pfp from './assets/rawnypfp.jpg';
   import html2canvas from 'html2canvas';
 
@@ -21,6 +22,8 @@
   let copied = 0;
 
   let ranking = '';
+  let showLeaderboard = false;
+
   
   let currentUser: User | null = null;
   let recentAnalyses = [];
@@ -50,6 +53,34 @@
       error = err.message;
     }
   }
+
+  //new made up ranking function
+
+  function scoreToPercentile(score, totalUsers) {
+    const total = totalUsers;
+    const ranges = [
+      { min: 9, max: 10, count: 4000, basePercentile: 0.968 }, // 96.8th percentile and above
+      { min: 8, max: 9, count: 54000, basePercentile: 0.536 }, // 53.6 to 96.8th percentile
+      { min: 7, max: 8, count: 25000, basePercentile: 0.336 }, // 33.6 to 53.6th percentile
+      { min: 6, max: 7, count: 22000, basePercentile: 0.16 },  // 16 to 33.6th percentile
+      { min: 5, max: 6, count: 14000, basePercentile: 0.048 }, // 4.8 to 16th percentile
+      { min: 4, max: 5, count: 2000, basePercentile: 0.032 },  // 3.2 to 4.8th percentile
+      { min: 0, max: 4, count: 6000, basePercentile: 0 }       // 0 to 3.2nd percentile
+    ];
+
+    for (let range of ranges) {
+      if (score >= range.min && score <= range.max) {
+        const scoreFraction = (score - range.min) / (range.max - range.min);
+        const percentile = 1 - (range.basePercentile + (scoreFraction * (range.count / total)));
+        return (percentile * 100).toFixed(2);
+      }
+    }
+
+    return "Invalid score";
+  }
+
+// Example usage:
+
 
   async function handleSubmit() {
     loading = true;
@@ -93,7 +124,7 @@
           if (userRank) {
             ranking = `#${userRank}`;
           } else {
-            ranking = `${Math.round((1 - (currentUser.score / 10)) * 100)} percentile`;
+            ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
           }
         }
      
@@ -184,9 +215,11 @@
       
   </div>
   
+  
 
   <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center" class:bg-white={currentUser}></div>
   
+
   {#if loading}
       <div class="fixed animate-spin text-3xl sm:text-4xl md:text-5xl origin-left">Loading</div>
   {/if}
@@ -196,6 +229,17 @@
       <h1 class="text-xl sm:text-lg md:text-2xl mb-4 md:mb-8">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>  
+
+    <button
+    class="mt-4 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+    on:click={() => showLeaderboard = !showLeaderboard}
+      >
+        {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
+      </button>
+
+    {#if showLeaderboard}
+      <Leaderboard />
+    {:else}
 
     <h2 class="absolute bottom-48 md:bottom-72 text-md sm:text-xl font-bold mt-6 sm:mt-8">Recent Analyses</h2>
     <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
@@ -210,6 +254,7 @@
         </div>
       {/each}
     </div>
+    {/if}
   {/if}
   
   {#if currentUser}
@@ -246,6 +291,7 @@
           error = '';
           resultDiv = null;
           getRecentAnalyses();
+          ranking = '';
           const bg = document.getElementById('background');
           if (bg) {
             bg.style.backgroundColor = 'white';
