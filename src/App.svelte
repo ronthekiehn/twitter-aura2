@@ -52,16 +52,17 @@
     }
   }
 
+  // New made up ranking function
   function scoreToPercentile(score, totalUsers) {
     const total = totalUsers;
     const ranges = [
-      { min: 9, max: 10, count: 4000, basePercentile: 0.968 },
-      { min: 8, max: 9, count: 54000, basePercentile: 0.536 },
-      { min: 7, max: 8, count: 25000, basePercentile: 0.336 },
-      { min: 6, max: 7, count: 22000, basePercentile: 0.16 },
-      { min: 5, max: 6, count: 14000, basePercentile: 0.048 },
-      { min: 4, max: 5, count: 2000, basePercentile: 0.032 },
-      { min: 0, max: 4, count: 6000, basePercentile: 0 }
+      { min: 9, max: 10, count: 4000, basePercentile: 0.968 }, // 96.8th percentile and above
+      { min: 8, max: 9, count: 54000, basePercentile: 0.536 }, // 53.6 to 96.8th percentile
+      { min: 7, max: 8, count: 25000, basePercentile: 0.336 }, // 33.6 to 53.6th percentile
+      { min: 6, max: 7, count: 22000, basePercentile: 0.16 },  // 16 to 33.6th percentile
+      { min: 5, max: 6, count: 14000, basePercentile: 0.048 }, // 4.8 to 16th percentile
+      { min: 4, max: 5, count: 2000, basePercentile: 0.032 },  // 3.2 to 4.8th percentile
+      { min: 0, max: 4, count: 6000, basePercentile: 0 }       // 0 to 3.2nd percentile
     ];
 
     for (let range of ranges) {
@@ -97,6 +98,18 @@
         analysis: data.analysis,
       };
 
+      // For testing purposes
+      // await new Promise(resolve => setTimeout(resolve, 100));
+      // currentUser = {
+      //   username: 'rrawnyy',
+      //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+      //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+      //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+      //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+      //   score: 10,
+      //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
+      // }
+
       const leaderboardResponse = await fetch('/api/getTop100');
       if (leaderboardResponse.ok) {
         const leaderboardData = await leaderboardResponse.json();
@@ -127,48 +140,52 @@
   }
 
   async function handleShare() {
-    if (!currentUser || !resultDiv) return;
+  if (!currentUser || !resultDiv) return;
 
+  try {
+    // Step 1: Capture the canvas
+    const canvas = await html2canvas(resultDiv, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+
+    // Step 2: Try to copy to clipboard (will work on desktop)
     try {
-      const canvas = await html2canvas(resultDiv, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
       });
 
-      try {
-        const blob = await new Promise<Blob | null>((resolve) => {
-          canvas.toBlob((blob) => resolve(blob), 'image/png');
-        });
-
-        if (!blob) {
-          throw new Error('Failed to generate PNG image');
-        }
-
-        const clipboardItem = new ClipboardItem({ 'image/png': blob });
-        await navigator.clipboard.write([clipboardItem]);
-        copied = 1;
-        console.log('Image copied to clipboard');
-      } catch (clipboardError) {
-        console.warn('Clipboard write failed, opening image in new tab:', clipboardError);
-        
-        const imageUrl = canvas.toDataURL('image/png');
-        const newTab = window.open();
-        if (newTab) {
-          copied = 2;
-          newTab.document.write('<img src="' + imageUrl + '" alt="Shared Image"/>');
-          newTab.document.close();
-          console.log('Image opened in new tab');
-        } else {
-          console.error('Failed to open new tab. Pop-ups might be blocked.');
-          error = 'Failed to open image. Please allow pop-ups and try again.';
-        }
+      if (!blob) {
+        throw new Error('Failed to generate PNG image');
       }
-    } catch (err) {
-      console.error('Failed to generate or share image:', err);
-      error = 'Failed to generate image for sharing';
+
+      const clipboardItem = new ClipboardItem({ 'image/png': blob });
+      await navigator.clipboard.write([clipboardItem]);
+      copied = 1;
+      console.log('Image copied to clipboard');
+    } catch (clipboardError) {
+      console.warn('Clipboard write failed, opening image in new tab:', clipboardError);
+      
+      // Fallback: Open canvas in new tab
+      const imageUrl = canvas.toDataURL('image/png');
+      const newTab = window.open();
+      if (newTab) {
+        copied = 2;
+        newTab.document.write('<img src="' + imageUrl + '" alt="Shared Image"/>');
+        newTab.document.close();
+        console.log('Image opened in new tab');
+      } else {
+        console.error('Failed to open new tab. Pop-ups might be blocked.');
+        error = 'Failed to open image. Please allow pop-ups and try again.';
+      }
     }
+
+  } catch (err) {
+    console.error('Failed to generate or share image:', err);
+    error = 'Failed to generate image for sharing';
   }
+}
 
   function toggleColorCodes() {
     showCodes = !showCodes;
@@ -176,11 +193,11 @@
 
   async function copyPalettes() {
     if (!currentUser) return;
-
+    // check for colours
     const profileColors = currentUser.profileColor.join('\n');
     const bannerColors = currentUser.bannerColor ? currentUser.bannerColor.join('\n') : 'No banner colors';
     const content = `Profile Colors:\n${profileColors}\n\nBanner Colors:\n${bannerColors}`;
-
+    // export to clipboard
     try {
       await navigator.clipboard.writeText(content);
       saveNotification = 'Palettes copied to clipboard!';
