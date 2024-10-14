@@ -20,18 +20,16 @@
   }
 
   let copied = 0;
-
   let ranking = '';
   let showLeaderboard = false;
-
-  
   let currentUser: User | null = null;
   let recentAnalyses = [];
   let error = '';
   let loading = false;
-  let resultDiv: HTMLElement | null = null; // Reference to the result div
+  let resultDiv: HTMLElement | null = null;
 
-
+  let showCodes = false;
+  let saveNotification = '';
 
   onMount(async () => {
     try {
@@ -54,18 +52,16 @@
     }
   }
 
-  //new made up ranking function
-
   function scoreToPercentile(score, totalUsers) {
     const total = totalUsers;
     const ranges = [
-      { min: 9, max: 10, count: 4000, basePercentile: 0.968 }, // 96.8th percentile and above
-      { min: 8, max: 9, count: 54000, basePercentile: 0.536 }, // 53.6 to 96.8th percentile
-      { min: 7, max: 8, count: 25000, basePercentile: 0.336 }, // 33.6 to 53.6th percentile
-      { min: 6, max: 7, count: 22000, basePercentile: 0.16 },  // 16 to 33.6th percentile
-      { min: 5, max: 6, count: 14000, basePercentile: 0.048 }, // 4.8 to 16th percentile
-      { min: 4, max: 5, count: 2000, basePercentile: 0.032 },  // 3.2 to 4.8th percentile
-      { min: 0, max: 4, count: 6000, basePercentile: 0 }       // 0 to 3.2nd percentile
+      { min: 9, max: 10, count: 4000, basePercentile: 0.968 },
+      { min: 8, max: 9, count: 54000, basePercentile: 0.536 },
+      { min: 7, max: 8, count: 25000, basePercentile: 0.336 },
+      { min: 6, max: 7, count: 22000, basePercentile: 0.16 },
+      { min: 5, max: 6, count: 14000, basePercentile: 0.048 },
+      { min: 4, max: 5, count: 2000, basePercentile: 0.032 },
+      { min: 0, max: 4, count: 6000, basePercentile: 0 }
     ];
 
     for (let range of ranges) {
@@ -79,9 +75,6 @@
     return "Invalid score";
   }
 
-// Example usage:
-
-
   async function handleSubmit() {
     loading = true;
     error = '';
@@ -93,40 +86,27 @@
         throw new Error(errorData.error || 'An error occurred');
       }
 
-    const data = await response.json();
-    currentUser = {
-      username: data.username,
-      profileImageUrl: data.profileImageUrl,
-       bannerImageUrl: data.bannerImageUrl,
-      profileColor: data.profileColor,
-      bannerColor: data.bannerColor,
-      score: data.beautyScore,
-      analysis: data.analysis,
-    };
-
-     //for testing purposes
-    //  await new Promise(resolve => setTimeout(resolve, 100));
-    //  currentUser ={
-    //   username: 'rrawnyy',
-    //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-    //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-    //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-    //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-    //   score: 10,
-    //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
-    //  }
-
+      const data = await response.json();
+      currentUser = {
+        username: data.username,
+        profileImageUrl: data.profileImageUrl,
+        bannerImageUrl: data.bannerImageUrl,
+        profileColor: data.profileColor,
+        bannerColor: data.bannerColor,
+        score: data.beautyScore,
+        analysis: data.analysis,
+      };
 
       const leaderboardResponse = await fetch('/api/getTop100');
-        if (leaderboardResponse.ok) {
-          const leaderboardData = await leaderboardResponse.json();
-          const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
-          if (userRank) {
-            ranking = `#${userRank}`;
-          } else {
-            ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
-          }
+      if (leaderboardResponse.ok) {
+        const leaderboardData = await leaderboardResponse.json();
+        const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
+        if (userRank) {
+          ranking = `#${userRank}`;
+        } else {
+          ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
         }
+      }
      
       const bg = document.getElementById('background');
       if (bg) {
@@ -146,55 +126,73 @@
     }
   }
 
-
   async function handleShare() {
-  if (!currentUser || !resultDiv) return;
+    if (!currentUser || !resultDiv) return;
 
-  try {
-    // Step 1: Capture the canvas
-    const canvas = await html2canvas(resultDiv, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-    });
-
-    // Step 2: Try to copy to clipboard (will work on desktop)
     try {
-      const blob = await new Promise<Blob | null>((resolve) => {
-        canvas.toBlob((blob) => resolve(blob), 'image/png');
+      const canvas = await html2canvas(resultDiv, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
       });
 
-      if (!blob) {
-        throw new Error('Failed to generate PNG image');
-      }
+      try {
+        const blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob((blob) => resolve(blob), 'image/png');
+        });
 
-      const clipboardItem = new ClipboardItem({ 'image/png': blob });
-      await navigator.clipboard.write([clipboardItem]);
-      copied = 1;
-      console.log('Image copied to clipboard');
-    } catch (clipboardError) {
-      console.warn('Clipboard write failed, opening image in new tab:', clipboardError);
-      
-      // Fallback: Open canvas in new tab
-      const imageUrl = canvas.toDataURL('image/png');
-      const newTab = window.open();
-      if (newTab) {
-        copied = 2;
-        newTab.document.write('<img src="' + imageUrl + '" alt="Shared Image"/>');
-        newTab.document.close();
-        console.log('Image opened in new tab');
-      } else {
-        console.error('Failed to open new tab. Pop-ups might be blocked.');
-        error = 'Failed to open image. Please allow pop-ups and try again.';
+        if (!blob) {
+          throw new Error('Failed to generate PNG image');
+        }
+
+        const clipboardItem = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([clipboardItem]);
+        copied = 1;
+        console.log('Image copied to clipboard');
+      } catch (clipboardError) {
+        console.warn('Clipboard write failed, opening image in new tab:', clipboardError);
+        
+        const imageUrl = canvas.toDataURL('image/png');
+        const newTab = window.open();
+        if (newTab) {
+          copied = 2;
+          newTab.document.write('<img src="' + imageUrl + '" alt="Shared Image"/>');
+          newTab.document.close();
+          console.log('Image opened in new tab');
+        } else {
+          console.error('Failed to open new tab. Pop-ups might be blocked.');
+          error = 'Failed to open image. Please allow pop-ups and try again.';
+        }
       }
+    } catch (err) {
+      console.error('Failed to generate or share image:', err);
+      error = 'Failed to generate image for sharing';
+    }
+  }
+
+  function toggleColorCodes() {
+    showCodes = !showCodes;
+  }
+
+  async function copyPalettes() {
+    if (!currentUser) return;
+
+    const profileColors = currentUser.profileColor.join('\n');
+    const bannerColors = currentUser.bannerColor ? currentUser.bannerColor.join('\n') : 'No banner colors';
+    const content = `Profile Colors:\n${profileColors}\n\nBanner Colors:\n${bannerColors}`;
+
+    try {
+      await navigator.clipboard.writeText(content);
+      saveNotification = 'Palettes copied to clipboard!';
+    } catch (err) {
+      console.error('Failed to copy palettes:', err);
+      saveNotification = 'Failed to copy palettes. Please try again.';
     }
 
-  } catch (err) {
-    console.error('Failed to generate or share image:', err);
-    error = 'Failed to generate image for sharing';
+    setTimeout(() => {
+      saveNotification = '';
+    }, 3000);
   }
-}
-
 </script>
 
 <main class="flex flex-col items-center justify-center min-h-screen text-center p-4 m-auto">
@@ -212,16 +210,12 @@
       <span class="text-xs mr-2">view the</span>
       <a class="font-bold underline text-xs" target="_blank" href="https://github.com/ronthekiehn/twitter-aura2">code</a>
     </div>
-      
   </div>
   
-  
-
   <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center" class:bg-white={currentUser}></div>
   
-
   {#if loading}
-      <div class="fixed animate-spin text-3xl sm:text-4xl md:text-5xl origin-left">Loading</div>
+    <div class="fixed animate-spin text-3xl sm:text-4xl md:text-5xl origin-left">Loading</div>
   {/if}
 
   {#if currentUser === null && !loading}
@@ -231,29 +225,28 @@
     </div>  
 
     <button
-    class="my-1 md:my-4 p-1 md:p-1 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base"
-    on:click={() => showLeaderboard = !showLeaderboard}
-      >
-        {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
-      </button>
+      class="my-1 md:my-4 p-1 md:p-1 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base"
+      on:click={() => showLeaderboard = !showLeaderboard}
+    >
+      {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
+    </button>
 
     {#if showLeaderboard}
       <Leaderboard />
     {:else}
-
-    <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
-    <div class="my-1 flex max-w-full overflow-auto no-scrollbar">
-      {#each recentAnalyses as recentAnalysis}
-        <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
-          <div class="flex items-center justify-center">
-            <span class="mr-2 sm:mr-3 md:mr-4 text-xs md:text-base">@{recentAnalysis.username}</span>
-            <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
+      <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
+      <div class="my-1 flex max-w-full overflow-auto no-scrollbar">
+        {#each recentAnalyses as recentAnalysis}
+          <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
+            <div class="flex items-center justify-center">
+              <span class="mr-2 sm:mr-3 md:mr-4 text-xs md:text-base">@{recentAnalysis.username}</span>
+              <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
+            </div>
+            <span class="mb-2 text-sm md:text-base">{recentAnalysis.beautyScore.toFixed(3)} / 10</span>
+            <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} {showCodes} />
           </div>
-          <span class="mb-2 text-sm md:text-base">{recentAnalysis.beautyScore.toFixed(3)} / 10</span>
-          <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
     {/if}
   {/if}
   
@@ -273,18 +266,37 @@
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
           <span class="mb-1 sm:mb-2 text-sm md:text-base">PFP Palette</span>
-          <ColorPalette size={250} height={75} palette={currentUser.profileColor} />
+          <ColorPalette size={250} height={75} palette={currentUser.profileColor} {showCodes} />
         </div>
         {#if currentUser.bannerColor}
-        <div>
-          <span class="mb-1 sm:mb-2 text-sm md:text-base">Header Palette</span>
-          <ColorPalette size={250} height={75} palette={currentUser.bannerColor} />
-        </div>
+          <div>
+            <span class="mb-1 sm:mb-2 text-sm md:text-base">Header Palette</span>
+            <ColorPalette size={250} height={75} palette={currentUser.bannerColor} {showCodes} />
+          </div>
         {/if}
       </div>
+      <div class="mt-4 flex space-x-2">
+        <button 
+          on:click={toggleColorCodes} 
+          class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
+        >
+          {showCodes ? 'Hide' : 'Show'} Color Codes
+        </button>
+        <button 
+          on:click={copyPalettes} 
+          class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
+        >
+          Copy Palettes
+        </button>
+      </div>
+      {#if saveNotification}
+        <div class="mt-2 text-green-600" transition:fade>
+          {saveNotification}
+        </div>
+      {/if}
     </div>
     <div class="flex space-x-2">
-        <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+      <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
         on:click={() => {
           currentUser = null;
           copied = 0;
@@ -298,17 +310,15 @@
             bg.style.opacity = '1';
           }
         }}>
-          Go Back
-        </button>
-        <TwitterShareButton disabled={!resultDiv} copied={copied} on:click={handleShare} />
-        <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+        Go Back
+      </button>
+      <TwitterShareButton disabled={!resultDiv} {copied} on:click={handleShare} />
+      <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
         on:click={() => window.open('https://buymeacoffee.com/ronthekiehn', '_blank')}
-        >
-          Donate (or don't)
-        </button>
+      >
+        Donate (or don't)
+      </button>
     </div>
-
-  
   {/if}
   
   {#if error}
