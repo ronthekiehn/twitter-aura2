@@ -29,7 +29,7 @@
     {:else if error}
       <div class="text-red-600 text-lg">Error: {error}</div>
     {:else}
-        <div class="text-lg mb-4">Total profiles analyzed: {leaderboardData.totalUsers}</div>
+        <div class="text-lg mb-4">Total profiles analyzed: {leaderboardData.totalUsers.toLocaleString()}</div>
       <div class="w-full overflow-auto max-h-96 no-scrollbar">
         {#each leaderboardData.top100 as user, index}
           <div class="flex items-center justify-between mb-2 p-2 border-b border-gray-200">
