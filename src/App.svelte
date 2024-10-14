@@ -268,7 +268,7 @@
           <span class="font-bold text-sm">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
-      <span class="mb-1 sm:mb-2 text-sm md:text-base-">Beauty: {currentUser.score.toFixed(3)} / 10</span>
+      <span class="mb-1 sm:mb-2 text-sm md:text-base">Beauty: {currentUser.score.toFixed(3)} / 10</span>
       <span class="mb-1 sm:mb-2 text-sm md:text-base">Ranking: {ranking}</span>
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
