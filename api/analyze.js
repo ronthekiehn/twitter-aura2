@@ -547,7 +547,7 @@ export default async (req, res) => {
             console.log("User has not changed their profile");
             await users.updateOne(
               { username: userData.screen_name },
-              { $set: { beautyScore, profileColor, bannerColor, analysis } }
+              { $set: { beautyScore } }
             );
             res.status(200).json(user);
             return
