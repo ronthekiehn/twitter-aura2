@@ -540,7 +540,7 @@ export default async (req, res) => {
 
     //if the user hasn't change their profile, keep everything the same
     if (user){
-      if (beautyScore === user.beautyScore &&
+      if (
         profileColor.length === user.profileColor.length &&
         bannerColor.length === user.bannerColor.length
       ) {
