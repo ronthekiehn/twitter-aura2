@@ -19,6 +19,8 @@
   }
 
   let copied = 0;
+
+  let ranking = '';
   
   let currentUser: User | null = null;
   let recentAnalyses = [];
@@ -82,13 +84,30 @@
     //   score: 10,
     //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
     //  }
+
+
+      const leaderboardResponse = await fetch('/api/getTop100');
+        if (leaderboardResponse.ok) {
+          const leaderboardData = await leaderboardResponse.json();
+          const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
+          if (userRank) {
+            ranking = `#${userRank}`;
+          } else {
+            ranking = `${Math.round((1 - (currentUser.score / 10)) * 100)} percentile`;
+          }
+        }
      
       const bg = document.getElementById('background');
       if (bg) {
-        bg.style.backgroundColor = currentUser.bannerColor[0];
+        if (currentUser.bannerColor) {
+          bg.style.backgroundColor = currentUser.bannerColor[0];
+        } else {
+          bg.style.backgroundColor = currentUser.profileColor[0];
+        }
         bg.style.opacity = '0.8';
       }
     } catch (err) {
+      console.error('Failed to analyze user:', err);
       error = err.message;
       currentUser = null;
     } finally {
@@ -205,6 +224,7 @@
         </div>
       </div>
       <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(2)} / 10</span>
+      <span class="mb-1 sm:mb-2 text-sm sm:text-base">Ranking: {ranking}</span>
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
           <span class="mb-1 sm:mb-2 text-sm sm:text-base">PFP Palette</span>
