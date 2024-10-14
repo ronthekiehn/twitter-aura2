@@ -71,7 +71,7 @@
     for (let range of ranges) {
       if (score >= range.min && score <= range.max) {
         const scoreFraction = (score - range.min) / (range.max - range.min);
-        const percentile = (range.basePercentile + (scoreFraction * (range.count / total)));
+        const percentile = 1 - (range.basePercentile + (scoreFraction * (range.count / total)));
         return (percentile * 100).toFixed(2);
       }
     }
