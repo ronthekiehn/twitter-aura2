@@ -4,6 +4,7 @@
   import TwitterInput from './lib/TwitterInput.svelte';
   import ColorPalette from './lib/ColorPalette.svelte';
   import TwitterShareButton from './lib/TwitterShareButton.svelte';
+  import Leaderboard from './lib/Leaderboard.svelte';
   import pfp from './assets/rawnypfp.jpg';
   import html2canvas from 'html2canvas';
 
@@ -19,6 +20,10 @@
   }
 
   let copied = 0;
+
+  let ranking = '';
+  let showLeaderboard = false;
+
   
   let currentUser: User | null = null;
   let recentAnalyses = [];
@@ -48,6 +53,34 @@
       error = err.message;
     }
   }
+
+  //new made up ranking function
+
+  function scoreToPercentile(score, totalUsers) {
+    const total = totalUsers;
+    const ranges = [
+      { min: 9, max: 10, count: 4000, basePercentile: 0.968 }, // 96.8th percentile and above
+      { min: 8, max: 9, count: 54000, basePercentile: 0.536 }, // 53.6 to 96.8th percentile
+      { min: 7, max: 8, count: 25000, basePercentile: 0.336 }, // 33.6 to 53.6th percentile
+      { min: 6, max: 7, count: 22000, basePercentile: 0.16 },  // 16 to 33.6th percentile
+      { min: 5, max: 6, count: 14000, basePercentile: 0.048 }, // 4.8 to 16th percentile
+      { min: 4, max: 5, count: 2000, basePercentile: 0.032 },  // 3.2 to 4.8th percentile
+      { min: 0, max: 4, count: 6000, basePercentile: 0 }       // 0 to 3.2nd percentile
+    ];
+
+    for (let range of ranges) {
+      if (score >= range.min && score <= range.max) {
+        const scoreFraction = (score - range.min) / (range.max - range.min);
+        const percentile = (range.basePercentile + (scoreFraction * (range.count / total)));
+        return (percentile * 100).toFixed(2);
+      }
+    }
+
+    return "Invalid score";
+  }
+
+// Example usage:
+
 
   async function handleSubmit() {
     loading = true;
@@ -82,13 +115,30 @@
     //   score: 10,
     //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
     //  }
+
+
+      const leaderboardResponse = await fetch('/api/getTop100');
+        if (leaderboardResponse.ok) {
+          const leaderboardData = await leaderboardResponse.json();
+          const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
+          if (userRank) {
+            ranking = `#${userRank}`;
+          } else {
+            ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
+          }
+        }
      
       const bg = document.getElementById('background');
       if (bg) {
-        bg.style.backgroundColor = currentUser.bannerColor[0];
+        if (currentUser.bannerColor) {
+          bg.style.backgroundColor = currentUser.bannerColor[0];
+        } else {
+          bg.style.backgroundColor = currentUser.profileColor[0];
+        }
         bg.style.opacity = '0.8';
       }
     } catch (err) {
+      console.error('Failed to analyze user:', err);
       error = err.message;
       currentUser = null;
     } finally {
@@ -165,32 +215,46 @@
       
   </div>
   
+  
 
   <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center" class:bg-white={currentUser}></div>
   
+
   {#if loading}
       <div class="fixed animate-spin text-3xl sm:text-4xl md:text-5xl origin-left">Loading</div>
   {/if}
 
   {#if currentUser === null && !loading}
-    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 mb-24 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
-      <h1 class="text-xl sm:text-lg md:text-2xl mb-4 md:mb-8">WHAT COLOR IS YOUR AURA</h1>
+    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
+      <h1 class="text-xl sm:text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>  
 
-    <h2 class="absolute bottom-48 md:bottom-72 text-md sm:text-xl font-bold mt-6 sm:mt-8">Recent Analyses</h2>
+    <button
+    class="my-1 md:my-4 p-1 md:p-1 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base"
+    on:click={() => showLeaderboard = !showLeaderboard}
+      >
+        {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
+      </button>
+
+    {#if showLeaderboard}
+      <Leaderboard />
+    {:else}
+
+    <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
     <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
       {#each recentAnalyses as recentAnalysis}
         <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
           <div class="flex items-center justify-center">
-            <span class="mr-2 sm:mr-3 md:mr-4 text-sm sm:text-base">@{recentAnalysis.username}</span>
-            <img class="rounded-full border-2 border-black w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
+            <span class="mr-2 sm:mr-3 md:mr-4 text-xs md:text-base">@{recentAnalysis.username}</span>
+            <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
           </div>
-          <span class="mb-2 text-sm sm:text-base">{recentAnalysis.beautyScore.toFixed(1)} / 10</span>
+          <span class="mb-2 text-sm md:text-base">{recentAnalysis.beautyScore.toFixed(2)} / 10</span>
           <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} />
         </div>
       {/each}
     </div>
+    {/if}
   {/if}
   
   {#if currentUser}
@@ -204,40 +268,50 @@
           <span class="font-bold text-sm">{currentUser.analysis.toLowerCase()}</span>
         </div>
       </div>
-      <span class="mb-1 sm:mb-2 text-sm sm:text-base">Beauty: {currentUser.score.toFixed(1)} / 10</span>
+      <span class="mb-1 sm:mb-2 text-sm md:text-base-">Beauty: {currentUser.score.toFixed(2)} / 10</span>
+      <span class="mb-1 sm:mb-2 text-sm md:text-base">Ranking: {ranking}</span>
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
-          <span class="mb-1 sm:mb-2 text-sm sm:text-base">PFP Palette</span>
+          <span class="mb-1 sm:mb-2 text-sm md:text-base">PFP Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.profileColor} />
         </div>
+        {#if currentUser.bannerColor}
         <div>
-          <span class="mb-1 sm:mb-2 text-sm sm:text-base">Header Palette</span>
+          <span class="mb-1 sm:mb-2 text-sm md:text-base">Header Palette</span>
           <ColorPalette size={250} height={75} palette={currentUser.bannerColor} />
         </div>
+        {/if}
       </div>
     </div>
-    <div class="d-flex">
-    <button class="mt-6 sm:mt-8 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
-     on:click={() => {
-      currentUser = null;
-      copied = 0;
-      error = '';
-      resultDiv = null;
-      getRecentAnalyses();
-      const bg = document.getElementById('background');
-      if (bg) {
-        bg.style.backgroundColor = 'white';
-        bg.style.opacity = '1';
-      }
-    }}>
-      Go Back
-    </button>
-    <TwitterShareButton disabled={!resultDiv} copied={copied} on:click={handleShare} />
+    <div class="flex space-x-2">
+        <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+        on:click={() => {
+          currentUser = null;
+          copied = 0;
+          error = '';
+          resultDiv = null;
+          getRecentAnalyses();
+          ranking = '';
+          const bg = document.getElementById('background');
+          if (bg) {
+            bg.style.backgroundColor = 'white';
+            bg.style.opacity = '1';
+          }
+        }}>
+          Go Back
+        </button>
+        <TwitterShareButton disabled={!resultDiv} copied={copied} on:click={handleShare} />
+        <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+        on:click={() => window.open('https://buymeacoffee.com/ronthekiehn', '_blank')}
+        >
+          Donate (or don't)
+        </button>
     </div>
-    
+
+  
   {/if}
   
   {#if error}
-    <p class="text-red-600 mt-4 text-sm sm:text-base">{error}</p>
+    <p class="text-red-600 mt-4 text-sm md:text-base">{error}</p>
   {/if}
 </main>

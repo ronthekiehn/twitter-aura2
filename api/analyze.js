@@ -373,6 +373,8 @@ Yellow Orange,#FFAA33
 Using this information, look at the following color palette and write
 one or two words to describe the feeling/aura of the color pallete. 
 Be funny and creative, maybe even a little mean. Don't say dusty.
+Don't say oceanic. Don't say library. Don't say haunted. Don't say drab.
+Don't say chic.
 Please only write one or two words, no lead up or explanation.
 `;
 
@@ -491,7 +493,7 @@ function getHarmonyScore(colors) {
     let finalScore = (numColorsScore + avgDistanceScore) / 2;
 
     // Round the final score to one decimal place
-    return Math.max(1, Math.min(10, Math.round(finalScore * 10) / 10));
+    return finalScore;
 
 }
 
@@ -505,11 +507,11 @@ export default async (req, res) => {
     const database = client.db('twitter');
     const users = database.collection('users');
     let user = await users.findOne({ username });
-    if (user){
-      console.log("user found - no repeat requests");
-      res.status(200).json(user);
-      return
-    }
+    // if (user){
+    //     console.log("user found - no repeat requests");
+    //     res.status(200).json(user);
+    //     return
+    //   }
 
     const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${username}`, {
       headers: { 
@@ -522,12 +524,15 @@ export default async (req, res) => {
 
     let profileColor = await extractColors(userData.profile_image_url_https);
     let bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
-    
-    // Combine the two color palettes
-    const rgbcolors = [...new Set([...profileColor, ...bannerColor])];
+    let rgbcolors;
+    if (bannerColor){
+      rgbcolors = [...new Set([...profileColor, ...bannerColor])];
+      bannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
+    } else {
+      rgbcolors = profileColor;
+    }
 
     profileColor = profileColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
-    bannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
     //map to hex
     const palette = rgbcolors.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
 
@@ -535,11 +540,15 @@ export default async (req, res) => {
 
     //if the user hasn't change their profile, keep everything the same
     if (user){
-      if (beautyScore === user.beautyScore &&
+      if (
         profileColor.length === user.profileColor.length &&
         bannerColor.length === user.bannerColor.length
       ) {
             console.log("User has not changed their profile");
+            await users.updateOne(
+              { username: userData.screen_name },
+              { $set: { beautyScore } }
+            );
             res.status(200).json(user);
             return
       }
