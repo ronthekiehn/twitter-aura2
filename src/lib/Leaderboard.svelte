@@ -33,13 +33,11 @@
       <div class="w-full overflow-auto max-h-96 no-scrollbar">
         {#each leaderboardData.top100 as user, index}
           <div class="flex items-center justify-between mb-2 p-2 border-b border-gray-200">
-            <div class="flex items-center">
               <span class="mr-2 font-bold text-sm sm:text-base">{index + 1}.</span>
-              <img src={user.profileImageUrl} alt={user.username} class="w-6 h-6 md:w-8 md:w-8 rounded-full border-2 border-black mr-2">
+              <img src={user.profileImageUrl} alt={user.username} class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-black mr-2">
               <span class="text-sm md:text-base">@{user.username}</span>
               <span class="mr-2 text-sm md:text-base">{user.beautyScore.toFixed(3)}</span>
-              <ColorPalette size={100} height={30} palette={user.profileColor} />
-            </div>
+              <ColorPalette size={75} height={30} palette={user.profileColor} />
           </div>
         {/each}
       </div>
