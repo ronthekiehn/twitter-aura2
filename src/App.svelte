@@ -71,7 +71,7 @@
     for (let range of ranges) {
       if (score >= range.min && score <= range.max) {
         const scoreFraction = (score - range.min) / (range.max - range.min);
-        const percentile = 1 - (range.basePercentile + (scoreFraction * (range.count / total)));
+        const percentile = (range.basePercentile + (scoreFraction * (range.count / total)));
         return (percentile * 100).toFixed(2);
       }
     }
@@ -225,13 +225,13 @@
   {/if}
 
   {#if currentUser === null && !loading}
-    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 mb-24 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
-      <h1 class="text-xl sm:text-lg md:text-2xl mb-4 md:mb-8">WHAT COLOR IS YOUR AURA</h1>
+    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
+      <h1 class="text-xl sm:text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>  
 
     <button
-    class="mt-4 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+    class="my-4 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
     on:click={() => showLeaderboard = !showLeaderboard}
       >
         {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
@@ -241,7 +241,7 @@
       <Leaderboard />
     {:else}
 
-    <h2 class="absolute bottom-48 md:bottom-72 text-md sm:text-xl font-bold mt-6 sm:mt-8">Recent Analyses</h2>
+    <h2 class="text-md sm:text-xl font-bold">Recent Analyses</h2>
     <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
       {#each recentAnalyses as recentAnalysis}
         <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
