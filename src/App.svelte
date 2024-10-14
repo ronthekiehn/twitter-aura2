@@ -231,7 +231,7 @@
     </div>  
 
     <button
-    class="my-4 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+    class="my-1 md:my-4 p-1 md:p-1 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
     on:click={() => showLeaderboard = !showLeaderboard}
       >
         {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
@@ -241,7 +241,7 @@
       <Leaderboard />
     {:else}
 
-    <h2 class="text-md sm:text-xl font-bold">Recent Analyses</h2>
+    <h2 class="text-base md:text-md font-bold">Recent Analyses</h2>
     <div class="flex absolute bottom-3 max-w-full overflow-auto no-scrollbar">
       {#each recentAnalyses as recentAnalysis}
         <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
