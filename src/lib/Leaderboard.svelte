@@ -22,7 +22,7 @@
   </script>
   
   <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center w-full max-w-xl lg:max-w-2xl">
-    <h2 class="text-xl sm:text-2xl md:text-3xl mb-4 md:mb-6 font-bold">Top 100 Most Beautiful</h2>
+    <h2 class="text-xl sm:text-2xl md:text-3xl mb-4 md:mb-6 font-bold">The Most Beautiful</h2>
     
     {#if loading}
       <div class="text-lg">Loading leaderboard...</div>
@@ -31,7 +31,7 @@
     {:else}
         <div class="text-lg mb-4">Total profiles analyzed: {leaderboardData.totalUsers.toLocaleString()}</div>
       <div class="w-full overflow-auto max-h-96 no-scrollbar">
-        {#each leaderboardData.top100 as user, index}
+        {#each Array.from(new Set(leaderboardData.top100.map(user => user.username))).map(username => leaderboardData.top100.find(user => user.username === username)) as user, index}
           <div class="flex flex-col md:flex-row items-center justify-between mb-2 p-2 border-b border-gray-200">
             <div class="flex items-center">
               <span class="mr-2 font-bold text-sm sm:text-base">{index + 1}.</span>

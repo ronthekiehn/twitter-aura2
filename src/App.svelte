@@ -29,6 +29,7 @@
   let resultDiv: HTMLElement | null = null;
 
   let showCodes = false;
+  let showGenerativeAIInfo = false;
   let saveNotification = '';
 
   onMount(async () => {
@@ -80,46 +81,46 @@
     loading = true;
     error = '';
     try {
-      // const response = await fetch(`/api/analyze?username=${username}`);
+      const response = await fetch(`/api/analyze?username=${username}`);
       
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.error || 'An error occurred');
-      // }
-
-      // const data = await response.json();
-      // currentUser = {
-      //   username: data.username,
-      //   profileImageUrl: data.profileImageUrl,
-      //   bannerImageUrl: data.bannerImageUrl,
-      //   profileColor: data.profileColor,
-      //   bannerColor: data.bannerColor,
-      //   score: data.beautyScore,
-      //   analysis: data.analysis,
-      // };
-
-      //For testing purposes
-      await new Promise(resolve => setTimeout(resolve, 100));
-      currentUser = {
-        username: 'rrawnyy',
-        profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-        bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-        profileColor: ['#f0f0f0', '#333333', '#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333',],
-        bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-        score: 10,
-        analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'An error occurred');
       }
 
-      // const leaderboardResponse = await fetch('/api/getTop100');
-      // if (leaderboardResponse.ok) {
-      //   const leaderboardData = await leaderboardResponse.json();
-      //   const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
-      //   if (userRank) {
-      //     ranking = `#${userRank}`;
-      //   } else {
-      //     ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
-      //   }
+      const data = await response.json();
+      currentUser = {
+        username: data.username,
+        profileImageUrl: data.profileImageUrl,
+        bannerImageUrl: data.bannerImageUrl,
+        profileColor: data.profileColor,
+        bannerColor: data.bannerColor,
+        score: data.beautyScore,
+        analysis: data.analysis,
+      };
+
+      //For testing purposes
+      // await new Promise(resolve => setTimeout(resolve, 100));
+      // currentUser = {
+      //   username: 'rrawnyy',
+      //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+      //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+      //   profileColor: ['#f0f0f0', '#333333', '#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333',],
+      //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+      //   score: 10,
+      //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
       // }
+
+      const leaderboardResponse = await fetch('/api/getTop100');
+      if (leaderboardResponse.ok) {
+        const leaderboardData = await leaderboardResponse.json();
+        const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
+        if (userRank) {
+          ranking = `#${userRank}`;
+        } else {
+          ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
+        }
+      }
      
       const bg = document.getElementById('background');
       if (bg) {
@@ -214,18 +215,48 @@
 
 <main class="flex flex-col items-center justify-center min-h-screen text-center p-4 m-auto">
   <div class="fixed flex flex-col items-start top-2 left-2">
+
     <div class='flex items-center justify-center'>
       <span class="text-xs">made by</span>
       <img src={pfp} class="rounded-full border-2 border-black w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 mb-2 mx-2" alt="pfp">
       <a class="font-bold underline text-xs" target="_blank" href="https://x.com/rrawnyy">@rrawnyy</a>
     </div>
+
     <div class='flex my-1 sm:my-2'>
       <span class="text-xs mr-2">inspired by</span>
       <a class="font-bold underline text-xs " target="_blank" href="https://www.auralized.com/">auralized dot com</a>
     </div>
+
+    <div class='flex my-1 sm:my-2'>
+      <span class="text-xs mr-2">this project uses</span>
+      <button class="font-bold underline text-xs"
+        on:click={() => showGenerativeAIInfo = !showGenerativeAIInfo}
+      >
+        generative ai
+      </button>
+    </div>
+
+    {#if showGenerativeAIInfo}
+      <div class="fixed md:relative z-50 border-gray-300 border-2 text-left p-0 md:p-2 rounded bg-white">
+        {#if window.innerWidth < 768}
+        <button class="text-xs text-red-500 underline" on:click={() => showGenerativeAIInfo = false}>Close</button>
+      {/if}
+      <li class="list-none text-xs z-50">this project uses google gemini to generate a description of your aura.</li>
+      <li class="list-none text-xs">only the palette colors are sent to gemini, not your banner, profile picture, or any other profile information</li>
+      <li class="list-none text-xs">if you have any questions, dm me on twitter or put an issue on github</li>
+      <li class="list-none text-xs">feel free to view the code as well</li>
+      </div>
+    {/if}
+
     <div class='flex my-1 sm:my-2'>
       <span class="text-xs mr-2">view the</span>
       <a class="font-bold underline text-xs" target="_blank" href="https://github.com/ronthekiehn/twitter-aura2">code</a>
+    </div>
+
+    <div class='flex my-1 sm:my-2'>
+      <span class="text-xs mr-2">consider</span>
+      <a class="font-bold underline text-xs mr-2" target="_blank" href="https://buymeacoffee.com/ronthekiehn">donating</a>
+      <span class="text-xs">to pay my vercel bills</span>
     </div>
   </div>
   
@@ -237,12 +268,12 @@
 
   {#if currentUser === null && !loading}
     <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
-      <h1 class="text-xl sm:text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
+      <h1 class="text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>  
 
     <button
-      class="my-1 md:my-4 p-1 md:p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base"
+      class="my-1 md:my-4 p-1 md:p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base hover:shadow-lg hover:translate-y-[-2px]"
       on:click={() => showLeaderboard = !showLeaderboard}
     >
       {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
@@ -314,7 +345,7 @@
       </div>
     {/if}
     <div class="flex space-x-2 mt-2 md:mt-4">
-      <button class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-red-400 transition-colors text-sm sm:text-base hover:translate-y-[-2px]"
+      <button class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-red-400 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
         on:click={() => {
           currentUser = null;
           copied = 0;
@@ -332,7 +363,7 @@
         Go Back
       </button>
       <TwitterShareButton disabled={!resultDiv} {copied} on:click={handleShare} />
-      <button class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-base hover:translate-y-[-2px]"
+      <button class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
         on:click={() => window.open('https://buymeacoffee.com/ronthekiehn', '_blank')}
       >
         Donate
