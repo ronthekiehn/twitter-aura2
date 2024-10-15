@@ -507,11 +507,6 @@ export default async (req, res) => {
     const database = client.db('twitter');
     const users = database.collection('users');
     let user = await users.findOne({ username });
-    if (user){
-        console.log("user found - no repeat requests");
-        res.status(200).json(user);
-        return
-      }
 
     const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${username}`, {
       headers: { 
@@ -527,12 +522,12 @@ export default async (req, res) => {
 
     if (user){
       if (
-        userData.profile_image_url_https === user.profileImageUrl &&
-        userData.profile_banner_url === user.bannerImageUrl
+      userData.profile_image_url_https === user.profileImageUrl &&
+      (!userData.profile_banner_url || userData.profile_banner_url === user.bannerImageUrl)
       ) {
-            console.log("User has not changed their profile");
-            res.status(200).json(user);
-            return
+        console.log("User has not changed their profile");
+        res.status(200).json(user);
+        return
       }
     }
 
