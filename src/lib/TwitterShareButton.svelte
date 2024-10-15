@@ -24,7 +24,7 @@
 
 <button
   on:click={handleClick}
-  class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+  class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-blue-400 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
   {disabled}
 >
   {#if copied == 0}
