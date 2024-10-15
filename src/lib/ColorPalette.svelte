@@ -18,20 +18,26 @@
   }
 </script>
 
-<div class="flex justify-center m-5 w-[{size}px]">
+<div class="flex justify-center m-2 md:m-4 w-[{size}px]">
   {#each palette as color}
     <div 
-      class="flex-1 flex flex-col items-center justify-end transition-transform duration-300 hover:scale-x-110 hover:z-10 group first:rounded-l-2xl last:rounded-r-2xl relative"
+      class="flex-1 flex flex-col justify-center transition-transform duration-300 hover:scale-x-125 hover:z-10 group first:rounded-l-xl last:rounded-r-xl relative"
       style="background-color: {color}; width: {size/palette.length}px; height: {height}px;"
     >
       {#if showCodes}
-        <span class="absolute bottom-full mb-1 text-xs px-1 py-0.5 rounded" style="background-color: {color}; color: {getContrastColor(color)};">
-          {color}
-        </span>
+      
+        {#each color.replace(/\s+/g, '').split('').slice(1) as char}
+          <span class="text-xs leading-3 font-bold transform group-hover:scale-x-75" style="color: {getContrastColor(color)};">{char}</span>
+        {/each}
+
+      {:else}
+        {#each color.replace(/\s+/g, '').split('').slice(1) as char}
+          <span class="font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-x-[0.8] text-xs leading-3" style="color: {getContrastColor(color)};">
+            {char}
+          </span>
+        {/each}
+
       {/if}
-      <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-x-90 translate-y-8 text-xs" style="color: {getContrastColor(color)};">
-        {color}
-      </span>
     </div>
   {/each}
 </div>

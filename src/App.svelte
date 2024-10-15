@@ -80,46 +80,46 @@
     loading = true;
     error = '';
     try {
-      const response = await fetch(`/api/analyze?username=${username}`);
+      // const response = await fetch(`/api/analyze?username=${username}`);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'An error occurred');
-      }
-
-      const data = await response.json();
-      currentUser = {
-        username: data.username,
-        profileImageUrl: data.profileImageUrl,
-        bannerImageUrl: data.bannerImageUrl,
-        profileColor: data.profileColor,
-        bannerColor: data.bannerColor,
-        score: data.beautyScore,
-        analysis: data.analysis,
-      };
-
-      // For testing purposes
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // currentUser = {
-      //   username: 'rrawnyy',
-      //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-      //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-      //   profileColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-      //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-      //   score: 10,
-      //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(errorData.error || 'An error occurred');
       // }
 
-      const leaderboardResponse = await fetch('/api/getTop100');
-      if (leaderboardResponse.ok) {
-        const leaderboardData = await leaderboardResponse.json();
-        const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
-        if (userRank) {
-          ranking = `#${userRank}`;
-        } else {
-          ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
-        }
+      // const data = await response.json();
+      // currentUser = {
+      //   username: data.username,
+      //   profileImageUrl: data.profileImageUrl,
+      //   bannerImageUrl: data.bannerImageUrl,
+      //   profileColor: data.profileColor,
+      //   bannerColor: data.bannerColor,
+      //   score: data.beautyScore,
+      //   analysis: data.analysis,
+      // };
+
+      //For testing purposes
+      await new Promise(resolve => setTimeout(resolve, 100));
+      currentUser = {
+        username: 'rrawnyy',
+        profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
+        bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
+        profileColor: ['#f0f0f0', '#333333', '#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333',],
+        bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+        score: 10,
+        analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
       }
+
+      // const leaderboardResponse = await fetch('/api/getTop100');
+      // if (leaderboardResponse.ok) {
+      //   const leaderboardData = await leaderboardResponse.json();
+      //   const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
+      //   if (userRank) {
+      //     ranking = `#${userRank}`;
+      //   } else {
+      //     ranking = `Top ${scoreToPercentile(currentUser.score, leaderboardData.totalUsers)}%`;
+      //   }
+      // }
      
       const bg = document.getElementById('background');
       if (bg) {
@@ -242,7 +242,7 @@
     </div>  
 
     <button
-      class="my-1 md:my-4 p-1 md:p-1 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base"
+      class="my-1 md:my-4 p-1 md:p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base"
       on:click={() => showLeaderboard = !showLeaderboard}
     >
       {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
@@ -283,37 +283,38 @@
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div class="mb-3 sm:mb-0">
           <span class="mb-1 sm:mb-2 text-sm md:text-base">PFP Palette</span>
-          <ColorPalette size={250} height={75} palette={currentUser.profileColor} {showCodes} />
+          <ColorPalette size={250} height={80} palette={currentUser.profileColor} {showCodes} />
         </div>
         {#if currentUser.bannerColor}
           <div>
             <span class="mb-1 sm:mb-2 text-sm md:text-base">Header Palette</span>
-            <ColorPalette size={250} height={75} palette={currentUser.bannerColor} {showCodes} />
+            <ColorPalette size={250} height={80} palette={currentUser.bannerColor} {showCodes} />
           </div>
         {/if}
       </div>
-      <div class="mt-4 flex space-x-2">
-        <button 
-          on:click={toggleColorCodes} 
-          class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
-        >
-          {showCodes ? 'Hide' : 'Show'} Color Codes
-        </button>
-        <button 
-          on:click={copyPalettes} 
-          class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
-        >
-          Copy Palettes
-        </button>
-      </div>
-      {#if saveNotification}
-        <div class="mt-2 text-green-600" transition:fade>
-          {saveNotification}
-        </div>
-      {/if}
     </div>
-    <div class="flex space-x-2">
-      <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+
+    <div class="flex space-x-2 mt-2 md:mt-4">
+      <button 
+        on:click={toggleColorCodes} 
+        class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
+      >
+        {showCodes ? 'Hide' : 'Show'} Color Codes
+      </button>
+      <button 
+        on:click={copyPalettes} 
+        class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base hover:shadow-lg hover:translate-y-[-2px]"
+      >
+        Copy Palettes
+      </button>
+    </div>
+    {#if saveNotification}
+      <div class="mt-2 text-green-600" transition:fade>
+        {saveNotification}
+      </div>
+    {/if}
+    <div class="flex space-x-2 mt-2 md:mt-4">
+      <button class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-red-400 transition-colors text-sm sm:text-base hover:translate-y-[-2px]"
         on:click={() => {
           currentUser = null;
           copied = 0;
@@ -321,6 +322,7 @@
           resultDiv = null;
           getRecentAnalyses();
           ranking = '';
+          showCodes = false;
           const bg = document.getElementById('background');
           if (bg) {
             bg.style.backgroundColor = 'white';
@@ -330,10 +332,10 @@
         Go Back
       </button>
       <TwitterShareButton disabled={!resultDiv} {copied} on:click={handleShare} />
-      <button class="mt-8 sm:mt-6 p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm sm:text-base"
+      <button class="p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-yellow-400 transition-colors text-sm sm:text-base hover:translate-y-[-2px]"
         on:click={() => window.open('https://buymeacoffee.com/ronthekiehn', '_blank')}
       >
-        Donate (or don't)
+        Donate
       </button>
     </div>
   {/if}
