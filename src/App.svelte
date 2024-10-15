@@ -313,7 +313,7 @@
       </div>
       <span class="mb-1 sm:mb-2 text-sm md:text-base">Beauty: {currentUser.score.toFixed(3)} / 10</span>
       <span class="mb-1 sm:mb-2 text-sm md:text-base">Ranking: {ranking}</span>
-      <div class="flex flex-col sm:flex-row justify-between items-center">
+      <div class="flex flex-col sm:flex-row mt-2 justify-between items-center">
         <div class="mb-3 sm:mb-0">
           <span class="mb-1 sm:mb-2 text-sm md:text-base">PFP Palette</span>
           <ColorPalette size={250} height={80} palette={currentUser.profileColor} {showCodes} />
