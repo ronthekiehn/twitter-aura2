@@ -302,7 +302,7 @@
   
   {#if currentUser}
     <div bind:this={resultDiv} class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center transition duration-300 w-full max-w-xl lg:max-w-2xl" in:fade={{ delay: 100 }}>
-      <div class="mb-4 sm:mb-6 flex flex-col items-center w-full">
+      <div class="mb-2 flex flex-col items-center w-full">
         <img class="rounded-lg border-4 border-black mb-4 w-full" src={currentUser.bannerImageUrl} alt="Banner">
         <div class="flex flex-col sm:flex-row items-center p-2">
           <img class="rounded-full border-4 border-black mr-2 sm:mr-4 w-12 h-12 sm:w-16 sm:h-16 my-2" src={currentUser.profileImageUrl} alt="Profile">
