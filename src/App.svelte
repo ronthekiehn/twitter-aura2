@@ -78,6 +78,8 @@
   }
 
   async function handleSubmit() {
+    showGenerativeAIInfo = false;
+    
     loading = true;
     error = '';
     try {
@@ -263,7 +265,7 @@
   <div id="background" class="fixed inset-0 -z-10 bg-cover bg-center" class:bg-white={currentUser}></div>
   
   {#if loading}
-    <div class="fixed animate-spin text-3xl sm:text-4xl md:text-5xl origin-left">Loading</div>
+    <div class="fixed inset-1/2 animate-spin text-3xl sm:text-4xl md:text-5xl origin-left">Loading</div>
   {/if}
 
   {#if currentUser === null && !loading}
