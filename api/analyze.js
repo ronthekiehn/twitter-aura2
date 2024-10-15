@@ -520,12 +520,14 @@ export default async (req, res) => {
     let profileColor = await extractColors(userData.profile_image_url_https);
     let bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
 
+    //if the user hasn't change their profile, keep everything the same
+
     if (user){
       if (
       userData.profile_image_url_https === user.profileImageUrl &&
-      (!userData.profile_banner_url || userData.profile_banner_url === user.bannerImageUrl)
+      (!userData.profile_banner_url || !user.bannerImageUrl || userData.profile_banner_url === user.bannerImageUrl)
       ) {
-        console.log("User has not changed their profile");
+        console.log(`${user.username} has not changed their profile`);
         res.status(200).json(user);
         return
       }
@@ -545,8 +547,6 @@ export default async (req, res) => {
 
     const beautyScore = getHarmonyScore(rgbcolors);
 
-    //if the user hasn't change their profile, keep everything the same
-   
 
     const finalprompt = prompt + palette.join(",")
     const result = await model.generateContent(finalprompt,);
@@ -568,9 +568,6 @@ export default async (req, res) => {
     console.log(user.username, "successfully analyzed");
     res.status(200).json(user);
   } catch (error) {
-    // if (user){
-    //   console.error(user.username, "failed to analyze");
-    // }
     console.error(error);
     if (error.response && error.response.status === 429) {
       res.status(429).json({ error: 'Hitting the rate limit, please wait a minute or so' });
