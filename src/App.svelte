@@ -213,7 +213,7 @@
   }
 </script>
 
-<main class="flex flex-col items-center justify-center min-h-screen text-center p-4 m-auto">
+<main class="flex flex-col items-center justify-end min-h-screen text-center p-4 m-auto">
   <div class="fixed flex flex-col items-start top-2 left-2">
 
     <div class='flex items-center justify-center'>
