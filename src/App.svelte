@@ -219,7 +219,7 @@
   <div class="fixed flex flex-col items-start top-2 left-2">
 
     <div class='flex items-center justify-center'>
-      <span class="text-xs">made by</span>
+      <span class="text-xs mr-2">made by</span>
       <a class="font-bold underline text-xs" target="_blank" href="https://ronkiehn.dev">ron kiehn</a>
     </div>
 
