@@ -5,7 +5,6 @@
   import ColorPalette from './lib/ColorPalette.svelte';
   import TwitterShareButton from './lib/TwitterShareButton.svelte';
   import Leaderboard from './lib/Leaderboard.svelte';
-  import pfp from './assets/rawnypfp.jpg';
   import html2canvas from 'html2canvas';
 
   let username = '';
@@ -221,8 +220,7 @@
 
     <div class='flex items-center justify-center'>
       <span class="text-xs">made by</span>
-      <img src={pfp} class="rounded-full border-2 border-black w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 mb-2 mx-2" alt="pfp">
-      <a class="font-bold underline text-xs" target="_blank" href="https://x.com/rrawnyy">@rrawnyy</a>
+      <a class="font-bold underline text-xs" target="_blank" href="https://ronkiehn.dev">ron kiehn</a>
     </div>
 
     <div class='flex my-1 sm:my-2'>
