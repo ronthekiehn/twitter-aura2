@@ -116,7 +116,8 @@
       const leaderboardResponse = await fetch('/api/getTop100');
       if (leaderboardResponse.ok) {
         const leaderboardData = await leaderboardResponse.json();
-        const userRank = leaderboardData.top100.findIndex(user => user.username === currentUser.username) + 1;
+        const topUsers = Array.from(new Set(leaderboardData.top100.map(user => user.username))).map(username => leaderboardData.top100.find(user => user.username === username))
+        const userRank = topUsers.findIndex(user => user.username === currentUser.username) + 1;
         if (userRank) {
           ranking = `#${userRank}`;
         } else {
