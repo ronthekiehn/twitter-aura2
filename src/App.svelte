@@ -218,7 +218,7 @@
 <main class="flex flex-col items-center justify-end min-h-screen text-center p-4 m-auto">
   <div class="fixed flex flex-col items-start top-2 left-2">
 
-    <div class='flex items-center justify-center'>
+    <div class='flex my-1 sm:my-2'>
       <span class="text-xs mr-2">made by</span>
       <a class="font-bold underline text-xs" target="_blank" href="https://ronkiehn.dev">ron kiehn</a>
     </div>

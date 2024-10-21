@@ -27,12 +27,12 @@
       {#if showCodes}
       
         {#each color.replace(/\s+/g, '').split('').slice(1) as char}
-          <span class="text-xs leading-3 font-bold transform group-hover:scale-x-75" style="color: {getContrastColor(color)};">{char}</span>
+          <span class="text-xs leading-3 font-bold transform group-hover:scale-x-[0.8]" style="color: {getContrastColor(color)};">{char}</span>
         {/each}
 
       {:else}
         {#if size === 100}
-          <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-x-90 translate-y-8 text-xs">{color}</span>
+          <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-x-[0.8] translate-y-8 text-xs">{color}</span>
         {:else}
           {#each color.replace(/\s+/g, '').split('').slice(1) as char}
             <span class="font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-x-[0.8] text-xs leading-3" style="color: {getContrastColor(color)};">
