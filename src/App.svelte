@@ -78,10 +78,11 @@
 
   async function handleSubmit() {
     showGenerativeAIInfo = false;
-    
+    console.log
     loading = true;
     error = '';
     try {
+      console.log(username)
       const response = await fetch(`/api/analyze?username=${username}`);
       
       if (!response.ok) {
@@ -90,6 +91,7 @@
       }
 
       const data = await response.json();
+      console.log(data)
       currentUser = {
         username: data.username,
         profileImageUrl: data.profileImageUrl,
@@ -100,17 +102,17 @@
         analysis: data.analysis,
       };
 
-      //For testing purposes
-      // await new Promise(resolve => setTimeout(resolve, 100));
-      // currentUser = {
-      //   username: 'rrawnyy',
-      //   profileImageUrl: 'https://pbs.twimg.com/profile_images/1841011343379288064/H4QWedNU_normal.jpg',
-      //   bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1726819698',
-      //   profileColor: ['#f0f0f0', '#333333', '#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333',],
-      //   bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
-      //   score: 10,
-      //   analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
-      // }
+    //  For testing purposes
+    //   await new Promise(resolve => setTimeout(resolve, 100));
+    //   currentUser = {
+    //     username: 'rrawnyy',
+    //     profileImageUrl: 'https://pbs.twimg.com/profile_images/1872187792878383104/b12WFvpm_400x400.jpg',
+    //     bannerImageUrl: 'https://pbs.twimg.com/profile_banners/1354987346614226948/1731710454/1500x500',
+    //     profileColor: ['#f0f0f0', '#333333', '#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333','#f0f0f0', '#333333',],
+    //     bannerColor: ['#f0f0f0', '#333333', '#333333', '#333333', '#333333'],
+    //     score: 10,
+    //     analysis: 'GoddessGoddessGoddessGoddessGoddessGoddess'
+    //   }
 
       const leaderboardResponse = await fetch('/api/getTop100');
       if (leaderboardResponse.ok) {
