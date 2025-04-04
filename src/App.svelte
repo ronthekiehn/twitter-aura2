@@ -46,7 +46,6 @@
         throw new Error('Failed to fetch recent analyses');
       }
       recentAnalyses = await response.json();
-      console.log(recentAnalyses);
     } catch (err) {
       error = err.message;
     }
@@ -78,11 +77,9 @@
 
   async function handleSubmit() {
     showGenerativeAIInfo = false;
-    console.log
     loading = true;
     error = '';
     try {
-      console.log(username)
       const response = await fetch(`/api/analyze?username=${username}`);
       
       if (!response.ok) {
@@ -91,7 +88,6 @@
       }
 
       const data = await response.json();
-      console.log(data)
       currentUser = {
         username: data.username,
         profileImageUrl: data.profileImageUrl,
@@ -102,7 +98,6 @@
         analysis: data.analysis,
       };
 
-      console.log(currentUser);
 
     //  For testing purposes
     //   await new Promise(resolve => setTimeout(resolve, 100));
@@ -170,7 +165,6 @@
       const clipboardItem = new ClipboardItem({ 'image/png': blob });
       await navigator.clipboard.write([clipboardItem]);
       copied = 1;
-      console.log('Image copied to clipboard');
     } catch (clipboardError) {
       console.warn('Clipboard write failed, opening image in new tab:', clipboardError);
       
@@ -181,7 +175,6 @@
         copied = 2;
         newTab.document.write('<img src="' + imageUrl + '" alt="Shared Image"/>');
         newTab.document.close();
-        console.log('Image opened in new tab');
       } else {
         console.error('Failed to open new tab. Pop-ups might be blocked.');
         error = 'Failed to open image. Please allow pop-ups and try again.';
