@@ -39,7 +39,7 @@
               <span class="text-sm md:text-base">@{user.username}</span>
             </div>
             <div class="flex items-center">
-              <!-- <span class="mr-2 text-sm md:text-base">{user.beautyScore.toFixed(3)}</span> -->
+              <span class="mr-2 text-sm md:text-base">{user.beautyScore.toFixed(3)}</span>
               <ColorPalette size={100} height={30} palette={user.profileColor} />
             </div>
           </div>

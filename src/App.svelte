@@ -102,6 +102,8 @@
         analysis: data.analysis,
       };
 
+      console.log(currentUser);
+
     //  For testing purposes
     //   await new Promise(resolve => setTimeout(resolve, 100));
     //   currentUser = {
