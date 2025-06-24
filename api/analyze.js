@@ -41,7 +41,7 @@ const safetySettings = [
       threshold: HarmBlockThreshold.BLOCK_NONE,
     },
   ]
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-8b', safetySettings });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite', safetySettings });
 
 
   function colorDistance(color1, color2) {
