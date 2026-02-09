@@ -239,8 +239,8 @@
         {#if window.innerWidth < 768}
         <button class="text-xs text-red-500 underline" on:click={() => showGenerativeAIInfo = false}>Close</button>
       {/if}
-      <li class="list-none text-xs z-50">this project uses google gemini to generate a description of your aura.</li>
-      <li class="list-none text-xs">only the palette colors are sent to gemini, not your banner, profile picture, or any other profile information</li>
+      <li class="list-none text-xs z-50">this project uses google gemma to generate a description of your aura.</li>
+      <li class="list-none text-xs">only the palette colors are sent to gemma, not your banner, profile picture, or any other profile information</li>
       <li class="list-none text-xs">if you have any questions, dm me on twitter or put an issue on github</li>
       <li class="list-none text-xs">feel free to view the code as well</li>
       </div>
