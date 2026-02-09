@@ -4,9 +4,15 @@ import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/ge
 import sharp from 'sharp';
 import { getPalette } from 'colorthief';
 
-const prompt = `You are an expert in color theory. Who understands hex codes like the back of their hand. Look at the following color palette and write one or two words to describe the feeling/aura of the color palette. 
+const prompt = `You are an expert in color theory who describes color palettes with witty, sharp aura labels.
+Look at the following color palette and describe its aura.
 Be funny and creative, maybe even a little mean. Don't say dusty.
-Please only write one or two words, no lead up or explanation.
+Return exactly two words.
+Rules:
+- output only two words
+- no punctuation, symbols, emojis, quotes, or line breaks
+- no explanations, alternatives, prefixes, or suffixes
+Output format: word1 word2
 `;
 
 const uri = process.env.MONGODB_URI;
@@ -99,6 +105,17 @@ function calculateScore(value, min, max) {
     }
   }
 
+function normalizeTwoWordAura(text) {
+    const words = (text || '').match(/[A-Za-z0-9]+(?:['-][A-Za-z0-9]+)*/g) || [];
+    if (words.length >= 2) {
+      return `${words[0]} ${words[1]}`.toLowerCase();
+    }
+    if (words.length === 1) {
+      return `${words[0]} aura`.toLowerCase();
+    }
+    return 'mystery aura';
+}
+
 function getHarmonyScore(colors) {
     let totalDistance = 0;
     let comparisons = 0;
@@ -182,7 +199,7 @@ export default async (req, res) => {
     const finalprompt = prompt + palette.join(",")
     const result = await model.generateContent(finalprompt,);
     const response = await result.response;
-    const analysis = await response.text();
+    const analysis = normalizeTwoWordAura(await response.text());
 
     // Store in MongoDB
     user = {
