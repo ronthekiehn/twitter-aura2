@@ -10,23 +10,26 @@
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@sveltejs/vite-plugin-svelte": "^4.0.4",
     "@tsconfig/svelte": "^5.0.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
-    "svelte": "^4.2.19",
+    "svelte": "^5.53.2",
     "svelte-check": "^4.0.4",
     "tailwindcss": "^3.4.13",
     "tslib": "^2.7.0",
     "typescript": "^5.5.3",
-    "vite": "^5.4.8"
+    "vite": "^5.4.21"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "axios": "^1.7.7",
+    "axios": "^1.13.5",
     "colorthief": "^2.6.0",
     "html2canvas": "^1.4.1",
     "mongodb": "^6.9.0",
     "sharp": "^0.33.5"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
   }
 }
