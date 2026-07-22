@@ -321,7 +321,7 @@
           </div>
         {/if}
       </div>
-      <span class="mt-3 text-xs text-gray-400">twitter-aura2.vercel.app</span>
+      <span class="mt-3 text-xs text-gray-700">twitter-aura2.vercel.app</span>
     </div>
 
     <div class="flex space-x-2 mt-2 md:mt-4">
