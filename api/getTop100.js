@@ -68,6 +68,7 @@ export default async (req, res) => {
           },
         },
       ])
+      .allowDiskUse(true)
       .toArray();
 
     const totalUsers = await users.countDocuments();
