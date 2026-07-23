@@ -302,13 +302,13 @@
   {/if}
 
   {#if currentUser === null && !loading}
-    <div class="grid w-full min-h-[calc(100vh-2rem)] grid-rows-[1fr_auto_1fr]">
-    <div class="row-start-2 justify-self-center bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
+    <div class="relative w-full h-[calc(100dvh-2rem)] overflow-hidden">
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full min-w-72 sm:max-w-md">
       <h1 class="text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>
 
-    <div class="row-start-3 flex w-full flex-col items-center self-end">
+    <div class="absolute inset-x-0 bottom-0 flex w-full flex-col items-center">
     <button
       class="my-1 md:my-4 p-1 md:p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base hover:shadow-lg hover:translate-y-[-2px]"
       on:click={() => showLeaderboard = !showLeaderboard}
