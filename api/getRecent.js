@@ -31,7 +31,7 @@ export default async (req, res) => {
 
     res.setHeader(
       'Cache-Control',
-      'public, max-age=0, s-maxage=30, stale-while-revalidate=60'
+      'public, max-age=0, s-maxage=10, stale-while-revalidate=20'
     );
     res.status(200).json(
       recentAnalyses.map((analysis) => ({
