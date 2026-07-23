@@ -249,7 +249,7 @@
   }
 </script>
 
-<main class="flex w-full max-w-full min-h-screen flex-col items-center justify-end overflow-x-hidden p-4 text-center m-auto">
+<main class="flex w-full max-w-full flex-col items-center justify-end overflow-x-hidden min-h-screen text-center p-4 m-auto">
   <div class="fixed flex flex-col items-start top-2 left-2">
 
     <div class='flex my-1 sm:my-2'>
@@ -302,13 +302,11 @@
   {/if}
 
   {#if currentUser === null && !loading}
-    <div class="fixed inset-0 overflow-hidden">
-    <div class="absolute inset-x-4 top-1/2 -mt-8 -translate-y-1/2 mx-auto bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center min-w-72 max-w-md">
+    <div class="relative -top-8 bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
       <h1 class="text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>
 
-    <div class="absolute inset-x-4 bottom-4 z-10 flex flex-col items-center">
     <button
       class="my-1 md:my-4 p-1 md:p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base hover:shadow-lg hover:translate-y-[-2px]"
       on:click={() => showLeaderboard = !showLeaderboard}
@@ -353,8 +351,6 @@
         {/if}
       </div>
     {/if}
-    </div>
-    </div>
   {/if}
   
   {#if currentUser}
