@@ -249,7 +249,7 @@
   }
 </script>
 
-<main class="flex w-full max-w-full flex-col items-center justify-end overflow-x-hidden min-h-screen text-center p-4 m-auto">
+<main class="flex w-full max-w-full flex-col items-center justify-end overflow-x-hidden min-h-screen text-center px-4 pt-4 pb-12 sm:pb-16 m-auto">
   <div class="fixed flex flex-col items-start top-2 left-2">
 
     <div class='flex my-1 sm:my-2'>
@@ -324,7 +324,7 @@
         aria-label="Recent analyses"
       >
         {#if recentLoading}
-          {#each Array(5) as _}
+          {#each Array(8) as _}
             <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-48 h-44 animate-pulse">
               <div class="flex items-center">
                 <div class="h-4 w-20 rounded bg-gray-200 mr-3"></div>
