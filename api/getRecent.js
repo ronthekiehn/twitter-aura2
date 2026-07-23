@@ -17,13 +17,7 @@ export default async (req, res) => {
     const users = database.collection('users');
     console.log("Connected to the database");
     const recentAnalyses = await users
-      .find({
-        beautyScore: {
-          $type: 'number',
-          $gte: 0,
-          $lte: 10,
-        },
-      })
+      .find({})
       .sort({ _id: -1 })
       .limit(15)
       .toArray();
