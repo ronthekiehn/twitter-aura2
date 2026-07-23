@@ -319,13 +319,13 @@
     {:else}
       <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
       <div
-        class="my-1 flex w-full max-w-[calc(100vw-2rem)] min-w-0 min-h-48 overflow-x-auto overflow-y-hidden no-scrollbar"
+        class="my-1 flex w-full max-w-[calc(100vw-2rem)] min-w-0 min-h-48 md:min-h-56 overflow-x-auto overflow-y-hidden no-scrollbar"
         aria-busy={recentLoading}
         aria-label="Recent analyses"
       >
         {#if recentLoading}
           {#each Array(8) as _}
-            <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-48 h-44 animate-pulse">
+            <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-48 h-40 md:h-52 animate-pulse">
               <div class="flex items-center">
                 <div class="h-4 w-20 rounded bg-gray-200 mr-3"></div>
                 <div class="h-10 w-10 rounded-full bg-gray-200"></div>
@@ -336,7 +336,7 @@
           {/each}
         {:else}
           {#each recentAnalyses as recentAnalysis}
-          <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-48 h-44">
+          <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-48 h-40 md:h-52">
             <div class="flex items-center justify-center">
               <span class="mr-2 sm:mr-3 text-xs md:text-sm max-w-28 truncate">@{recentAnalysis.username}</span>
               <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
