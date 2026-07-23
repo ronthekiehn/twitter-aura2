@@ -17,19 +17,57 @@ export default async (req, res) => {
     const users = database.collection('users');
     console.log("Connected to the database");
     
+    const validScoreFilter = {
+      username: {
+        $type: 'string',
+        $ne: '',
+      },
+      beautyScore: {
+        $type: 'number',
+        $gte: 0,
+        $lte: 10,
+      },
+    };
+
     const top100 = await users
-      .find(
+      .aggregate([
         {
-          beautyScore: {
-            $type: 'number',
-            $gte: 0,
-            $lte: 10,
+          $match: validScoreFilter,
+        },
+        {
+          $sort: {
+            beautyScore: -1,
+            _id: -1,
           },
         },
-        { projection: { username: 1, beautyScore: 1, profileColor: 1, profileImageUrl: 1 } }
-      )
-      .sort({ beautyScore: -1 })
-      .limit(100)
+        {
+          $group: {
+            _id: '$username',
+            user: { $first: '$$ROOT' },
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: '$user',
+          },
+        },
+        {
+          $sort: {
+            beautyScore: -1,
+          },
+        },
+        {
+          $limit: 100,
+        },
+        {
+          $project: {
+            username: 1,
+            beautyScore: 1,
+            profileColor: 1,
+            profileImageUrl: 1,
+          },
+        },
+      ])
       .toArray();
 
     const totalUsers = await users.countDocuments();
