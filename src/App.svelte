@@ -41,7 +41,6 @@
   let currentUser: User | null = null;
   let recentAnalyses: RecentAnalysis[] = [];
   let recentLoading = true;
-  let relativeTimeNow = Date.now();
   let error = '';
   let loading = false;
   let resultDiv: HTMLElement | null = null;
@@ -52,11 +51,6 @@
 
   onMount(() => {
     getRecentAnalyses();
-    const relativeTimeInterval = window.setInterval(() => {
-      relativeTimeNow = Date.now();
-    }, 60_000);
-
-    return () => window.clearInterval(relativeTimeInterval);
   });
 
   async function getRecentAnalyses() {
@@ -77,7 +71,7 @@
   function formatRelativeTime(analyzedAt: string) {
     const elapsedSeconds = Math.max(
       0,
-      Math.floor((relativeTimeNow - new Date(analyzedAt).getTime()) / 1000)
+      Math.floor((Date.now() - new Date(analyzedAt).getTime()) / 1000)
     );
 
     if (elapsedSeconds < 60) return 'just now';
