@@ -18,11 +18,29 @@
     analysis: string;
   }
 
+  interface RecentAnalysis {
+    username: string;
+    profileImageUrl: string;
+    profileColor: string[];
+    beautyScore: number;
+    analyzedAt: string;
+  }
+
+  interface LeaderboardEntry {
+    username: string;
+  }
+
+  interface LeaderboardResponse {
+    top100: LeaderboardEntry[];
+    totalUsers: number;
+  }
+
   let copied = 0;
   let ranking = '';
   let showLeaderboard = false;
   let currentUser: User | null = null;
-  let recentAnalyses = [];
+  let recentAnalyses: RecentAnalysis[] = [];
+  let recentLoading = true;
   let error = '';
   let loading = false;
   let resultDiv: HTMLElement | null = null;
@@ -31,15 +49,12 @@
   let showGenerativeAIInfo = false;
   let saveNotification = '';
 
-  onMount(async () => {
-    try {
-      await getRecentAnalyses();
-    } catch (err) {
-      error = 'Failed to fetch recent analyses';
-    }
+  onMount(() => {
+    getRecentAnalyses();
   });
 
   async function getRecentAnalyses() {
+    recentLoading = true;
     try {
       const response = await fetch('/api/getRecent');
       if (!response.ok) {
@@ -47,12 +62,26 @@
       }
       recentAnalyses = await response.json();
     } catch (err) {
-      error = err.message;
+      error = err instanceof Error ? err.message : 'Failed to fetch recent analyses';
+    } finally {
+      recentLoading = false;
     }
   }
 
+  function formatRelativeTime(analyzedAt: string) {
+    const elapsedSeconds = Math.max(
+      0,
+      Math.floor((Date.now() - new Date(analyzedAt).getTime()) / 1000)
+    );
+
+    if (elapsedSeconds < 60) return 'just now';
+    if (elapsedSeconds < 3_600) return `${Math.floor(elapsedSeconds / 60)}m ago`;
+    if (elapsedSeconds < 86_400) return `${Math.floor(elapsedSeconds / 3_600)}h ago`;
+    return `${Math.floor(elapsedSeconds / 86_400)}d ago`;
+  }
+
   // New made up ranking function
-  function scoreToPercentile(score, totalUsers) {
+  function scoreToPercentile(score: number, totalUsers: number) {
     const total = totalUsers;
     const ranges = [
       { min: 9, max: 10, count: 4000, basePercentile: 0.968 }, // 96.8th percentile and above
@@ -80,7 +109,7 @@
     loading = true;
     error = '';
     try {
-      const response = await fetch(`/api/analyze?username=${username}`);
+      const response = await fetch(`/api/analyze?username=${encodeURIComponent(username)}`);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -113,9 +142,11 @@
 
       const leaderboardResponse = await fetch('/api/getTop100');
       if (leaderboardResponse.ok) {
-        const leaderboardData = await leaderboardResponse.json();
-        const topUsers = Array.from(new Set(leaderboardData.top100.map(user => user.username))).map(username => leaderboardData.top100.find(user => user.username === username))
-        const userRank = topUsers.findIndex(user => user.username === currentUser.username) + 1;
+        const leaderboardData: LeaderboardResponse = await leaderboardResponse.json();
+        const topUsers = Array.from(
+          new Map(leaderboardData.top100.map(user => [user.username, user])).values()
+        );
+        const userRank = topUsers.findIndex(user => user.username === data.username) + 1;
         if (userRank) {
           ranking = `#${userRank}`;
         } else {
@@ -134,7 +165,7 @@
       }
     } catch (err) {
       console.error('Failed to analyze user:', err);
-      error = err.message;
+      error = err instanceof Error ? err.message : 'Failed to analyze user';
       currentUser = null;
     } finally {
       loading = false;
@@ -212,7 +243,7 @@
   }
 </script>
 
-<main class="flex flex-col items-center justify-end min-h-screen text-center p-4 m-auto">
+<main class="flex w-full max-w-full flex-col items-center justify-end overflow-x-hidden min-h-screen text-center p-4 m-auto">
   <div class="fixed flex flex-col items-start top-2 left-2">
 
     <div class='flex my-1 sm:my-2'>
@@ -265,10 +296,10 @@
   {/if}
 
   {#if currentUser === null && !loading}
-    <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
+    <div class="relative -top-8 bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center w-full h-full min-w-72 sm:max-w-md">
       <h1 class="text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
-    </div>  
+    </div>
 
     <button
       class="my-1 md:my-4 p-1 md:p-2 bg-white border-black shadow-md border-4 text-black rounded-lg hover:bg-slate-100 transition-colors text-sm md:text-base hover:shadow-lg hover:translate-y-[-2px]"
@@ -281,17 +312,37 @@
       <Leaderboard />
     {:else}
       <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
-      <div class="my-1 flex max-w-full overflow-auto no-scrollbar">
-        {#each recentAnalyses as recentAnalysis}
-          <div class="border-black border-4 shadow-md p-2 sm:p-4 md:p-6 my-2 flex flex-col items-center rounded-3xl mx-2 w-fit">
+      <div
+        class="my-1 flex w-full max-w-[calc(100vw-2rem)] min-w-0 min-h-[156px] md:min-h-[216px] overflow-x-auto overflow-y-hidden no-scrollbar"
+        aria-busy={recentLoading}
+        aria-label="Recent analyses"
+      >
+        {#if recentLoading}
+          {#each Array(8) as _}
+            <div class="border-black border-4 shadow-md p-2 md:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-[140px] h-[140px] md:w-[200px] md:h-[200px] animate-pulse">
+              <div class="flex items-center">
+                <div class="h-4 w-20 rounded bg-gray-200 mr-3"></div>
+                <div class="h-10 w-10 rounded-full bg-gray-200"></div>
+              </div>
+              <div class="h-4 w-16 rounded bg-gray-200 my-3"></div>
+              <div class="h-7 w-24 rounded bg-gray-200"></div>
+            </div>
+          {/each}
+        {:else}
+          {#each recentAnalyses as recentAnalysis}
+          <div class="border-black border-4 shadow-md p-2 md:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-[140px] h-[140px] md:w-[200px] md:h-[200px]">
             <div class="flex items-center justify-center">
-              <span class="mr-2 sm:mr-3 md:mr-4 text-xs md:text-base">@{recentAnalysis.username}</span>
+              <span class="mr-2 sm:mr-3 text-xs md:text-sm max-w-28 truncate">@{recentAnalysis.username}</span>
               <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">
             </div>
-            <span class="mb-2 text-sm md:text-base">{recentAnalysis.beautyScore.toFixed(3)} / 10</span>
+            <span class="mt-1 text-xs text-gray-700">{formatRelativeTime(recentAnalysis.analyzedAt)}</span>
+            <span class="mb-1 text-sm md:text-base">
+              {Number.isFinite(recentAnalysis.beautyScore) ? recentAnalysis.beautyScore.toFixed(3) : 'Unscored'}{Number.isFinite(recentAnalysis.beautyScore) ? ' / 10' : ''}
+            </span>
             <ColorPalette size={100} height={30} palette={recentAnalysis.profileColor} {showCodes} />
           </div>
         {/each}
+        {/if}
       </div>
     {/if}
   {/if}

@@ -14,36 +14,53 @@
         }
         leaderboardData = await response.json();
       } catch (err) {
-        error = err.message;
+        error = err instanceof Error ? err.message : 'Failed to fetch leaderboard data';
       } finally {
         loading = false;
       }
     });
   </script>
   
-  <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center w-full max-w-xl lg:max-w-2xl">
+  <div class="bg-white rounded-3xl shadow-lg border-4 border-black z-10 p-4 sm:p-6 md:p-8 flex flex-col items-center w-full max-w-xl lg:max-w-2xl min-h-[32rem]">
     <h2 class="text-xl sm:text-2xl md:text-3xl mb-4 md:mb-6 font-bold">The Most Beautiful</h2>
     
     {#if loading}
-      <div class="text-lg">Loading leaderboard...</div>
-    {:else if error}
-      <div class="text-red-600 text-lg">Error: {error}</div>
-    {:else}
-        <div class="text-lg mb-4">Total profiles analyzed: {leaderboardData.totalUsers.toLocaleString()}</div>
-      <div class="w-full overflow-auto max-h-96 no-scrollbar">
-        {#each Array.from(new Set(leaderboardData.top100.map(user => user.username))).map(username => leaderboardData.top100.find(user => user.username === username)) as user, index}
-          <div class="flex flex-col md:flex-row items-center justify-between mb-2 p-2 border-b border-gray-200">
+      <div class="w-full min-h-96" aria-busy="true" aria-label="Loading leaderboard">
+        <div class="h-6 w-52 rounded bg-gray-200 animate-pulse mx-auto mb-4"></div>
+        {#each Array(6) as _}
+          <div class="flex items-center justify-between mb-2 p-2 border-b border-gray-200 animate-pulse">
             <div class="flex items-center">
-              <span class="mr-2 font-bold text-sm sm:text-base">{index + 1}.</span>
-              <img src={user.profileImageUrl} alt={user.username} class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-black mr-2">
-              <span class="text-sm md:text-base">@{user.username}</span>
+              <div class="h-4 w-5 rounded bg-gray-200 mr-2"></div>
+              <div class="h-10 w-10 rounded-full bg-gray-200 mr-2"></div>
+              <div class="h-4 w-28 rounded bg-gray-200"></div>
             </div>
             <div class="flex items-center">
-              <span class="mr-2 text-sm md:text-base">{user.beautyScore.toFixed(3)}</span>
-              <ColorPalette size={100} height={30} palette={user.profileColor} />
+              <div class="h-4 w-12 rounded bg-gray-200 mr-2"></div>
+              <div class="h-7 w-24 rounded bg-gray-200"></div>
             </div>
           </div>
         {/each}
+      </div>
+    {:else if error}
+      <div class="text-red-600 text-lg min-h-96 flex items-center">Error: {error}</div>
+    {:else}
+      <div class="w-full min-h-96">
+          <div class="text-lg mb-4">Total profiles analyzed: {leaderboardData.totalUsers.toLocaleString()}</div>
+        <div class="w-full overflow-auto max-h-96 no-scrollbar">
+          {#each Array.from(new Set(leaderboardData.top100.map(user => user.username))).map(username => leaderboardData.top100.find(user => user.username === username)) as user, index}
+            <div class="flex flex-col md:flex-row items-center justify-between mb-2 p-2 border-b border-gray-200">
+              <div class="flex items-center">
+                <span class="mr-2 font-bold text-sm sm:text-base">{index + 1}.</span>
+                <img src={user.profileImageUrl} alt={user.username} class="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-black mr-2">
+                <span class="text-sm md:text-base">@{user.username}</span>
+              </div>
+              <div class="flex items-center">
+                <span class="mr-2 text-sm md:text-base">{user.beautyScore.toFixed(3)}</span>
+                <ColorPalette size={100} height={30} palette={user.profileColor} />
+              </div>
+            </div>
+          {/each}
+        </div>
       </div>
     {/if}
   </div>

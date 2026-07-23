@@ -158,15 +158,22 @@ function getHarmonyScore(colors) {
 
 export default async (req, res) => {
   console.log("GET /api/analyze");
-  const { username } = req.query;
-  console.log(username);
+  const requestedUsername = typeof req.query.username === 'string'
+    ? req.query.username.trim().replace(/^@/, '')
+    : '';
+
+  if (!requestedUsername) {
+    res.status(400).json({ error: 'A Twitter username is required' });
+    return;
+  }
+
+  console.log(requestedUsername);
   try {
     await client.connect();
     const database = client.db('twitter');
     const users = database.collection('users');
-    let user = await users.findOne({ username });
 
-    const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${username}`, {
+    const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${encodeURIComponent(requestedUsername)}`, {
       headers: { 
         'Authorization': `Bearer ${socialDataApiKey}`,
         'Accept': 'application/json'
@@ -174,22 +181,25 @@ export default async (req, res) => {
     });
     
     const userData = socialDataResponse.data;
+    const canonicalUsername = userData.screen_name;
+    let user = await users.findOne(
+      { username: canonicalUsername },
+      { sort: { _id: -1 } }
+    );
+
+    // Return the newest stored analysis when SocialData reports the same assets.
+    if (
+      user &&
+      userData.profile_image_url_https === user.profileImageUrl &&
+      (userData.profile_banner_url ?? null) === (user.bannerImageUrl ?? null)
+    ) {
+      console.log(`${user.username} has not changed their profile`);
+      res.status(200).json(user);
+      return;
+    }
 
     let profileColor = await extractColors(userData.profile_image_url_https);
     let bannerColor = userData.profile_banner_url ? await extractColors(userData.profile_banner_url) : null;
-
-    //if the user hasn't change their profile, keep everything the same
-
-    if (user){
-      if (
-      userData.profile_image_url_https === user.profileImageUrl &&
-      (!userData.profile_banner_url || !user.bannerImageUrl || userData.profile_banner_url === user.bannerImageUrl)
-      ) {
-        console.log(`${user.username} has not changed their profile`);
-        res.status(200).json(user);
-        return
-      }
-    }
 
     let rgbcolors;
     if (bannerColor){
@@ -214,18 +224,30 @@ export default async (req, res) => {
     const analysis = normalizeTwoWordAura(await response.text());
 
     // Store in MongoDB
-    user = {
-      username: userData.screen_name,
+    const analyzedUser = {
+      username: canonicalUsername,
       profileColor,
       bannerColor,
       beautyScore,
       analysis,
       profileImageUrl: userData.profile_image_url_https,
       bannerImageUrl: userData.profile_banner_url,
+      analyzedAt: new Date(),
     };
-    await users.insertOne(user);
 
-    console.log(user.username, "successfully analyzed");
+    if (user) {
+      await users.updateOne(
+        { _id: user._id },
+        { $set: analyzedUser }
+      );
+      user = { ...user, ...analyzedUser };
+      console.log(user.username, "successfully updated");
+    } else {
+      const { insertedId } = await users.insertOne(analyzedUser);
+      user = { _id: insertedId, ...analyzedUser };
+      console.log(user.username, "successfully analyzed");
+    }
+
     res.status(200).json(user);
   } catch (error) {
     console.error(error);
