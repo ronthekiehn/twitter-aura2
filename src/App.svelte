@@ -249,7 +249,7 @@
   }
 </script>
 
-<main class="flex flex-col items-center justify-end min-h-screen text-center p-4 m-auto">
+<main class="flex w-full max-w-full flex-col items-center justify-end overflow-x-hidden min-h-screen text-center p-4 m-auto">
   <div class="fixed flex flex-col items-start top-2 left-2">
 
     <div class='flex my-1 sm:my-2'>
@@ -319,13 +319,13 @@
     {:else}
       <h2 class="text-sm md:text-base font-bold">Recent Analyses</h2>
       <div
-        class="my-1 flex w-full max-w-full min-h-36 overflow-auto no-scrollbar"
+        class="my-1 flex w-full max-w-[calc(100vw-2rem)] min-w-0 min-h-48 overflow-x-auto overflow-y-hidden no-scrollbar"
         aria-busy={recentLoading}
         aria-label="Recent analyses"
       >
         {#if recentLoading}
           {#each Array(5) as _}
-            <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-col items-center justify-center rounded-3xl mx-2 w-48 min-w-48 h-32 animate-pulse">
+            <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-48 h-44 animate-pulse">
               <div class="flex items-center">
                 <div class="h-4 w-20 rounded bg-gray-200 mr-3"></div>
                 <div class="h-10 w-10 rounded-full bg-gray-200"></div>
@@ -336,7 +336,7 @@
           {/each}
         {:else}
           {#each recentAnalyses as recentAnalysis}
-          <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-col items-center justify-center rounded-3xl mx-2 w-48 min-w-48 h-32">
+          <div class="border-black border-4 shadow-md p-3 sm:p-4 my-2 flex flex-none flex-col items-center justify-center overflow-hidden rounded-3xl mx-2 w-48 h-44">
             <div class="flex items-center justify-center">
               <span class="mr-2 sm:mr-3 text-xs md:text-sm max-w-28 truncate">@{recentAnalysis.username}</span>
               <img class="rounded-full border-2 border-black w-8 h-8 md:w-12 md:h-12" src={recentAnalysis.profileImageUrl} alt="Profile">

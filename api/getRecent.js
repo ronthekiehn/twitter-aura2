@@ -9,7 +9,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-const RECENT_LIMIT = 75;
+const RECENT_LIMIT = 25;
 const BATCH_SIZE = 200;
 const MAX_BATCHES = 10;
 
