@@ -303,7 +303,7 @@
 
   {#if currentUser === null && !loading}
     <div class="fixed inset-0 overflow-hidden">
-    <div class="absolute inset-x-4 top-1/2 -translate-y-1/2 mx-auto bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center min-w-72 max-w-md">
+    <div class="absolute inset-x-4 top-1/2 -mt-8 -translate-y-1/2 mx-auto bg-white rounded-3xl shadow-lg border-4 border-black z-10 md:p-12 p-8 flex flex-col items-center min-w-72 max-w-md">
       <h1 class="text-lg md:text-2xl">WHAT COLOR IS YOUR AURA</h1>
       <TwitterInput bind:username on:submit={handleSubmit} />
     </div>
