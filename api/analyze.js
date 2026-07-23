@@ -84,14 +84,20 @@ async function extractColors(imageUrl) {
         const buffer = await sharp(Buffer.from(response.data))
             .resize(100)
             .toBuffer();
-        const colorPalette = await getPalette(buffer, 10);
+        const colorPalette = await getPalette(buffer, { colorCount: 10 });
+
+        if (!colorPalette?.length) {
+            throw new Error('No colors found in image');
+        }
+
+        const rgbPalette = colorPalette.map(color => color.array());
         
         // Filter out similar colors
-        const filteredPalette = filterSimilarColors(colorPalette);
+        const filteredPalette = filterSimilarColors(rgbPalette);
         return filteredPalette;
     } catch (error) {
         console.error('Error extracting colors:', error);
-        return [];
+        throw error;
     }
 }
 
@@ -117,6 +123,10 @@ function normalizeTwoWordAura(text) {
 }
 
 function getHarmonyScore(colors) {
+    if (!colors.length) {
+        throw new Error('Cannot score an empty color palette');
+    }
+
     let totalDistance = 0;
     let comparisons = 0;
 
@@ -128,7 +138,7 @@ function getHarmonyScore(colors) {
         }
     }
 
-    const avgDistance = totalDistance / comparisons;
+    const avgDistance = comparisons > 0 ? totalDistance / comparisons : 0;
     // Calculate the average distance
     const idealNumColors = { min: 12, max: 16 };
     const idealAvgDistance = { min: 70, max: 180 };
@@ -183,7 +193,9 @@ export default async (req, res) => {
 
     let rgbcolors;
     if (bannerColor){
-      rgbcolors = [...new Set([...profileColor, ...bannerColor])];
+      rgbcolors = Array.from(
+        new Map([...profileColor, ...bannerColor].map(rgb => [rgb.join(','), rgb])).values()
+      );
       bannerColor = bannerColor.map(rgb => `#${rgb.map(x => x.toString(16).padStart(2, '0')).join('')}`);
     } else {
       rgbcolors = profileColor;

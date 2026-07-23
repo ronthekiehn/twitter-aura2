@@ -16,11 +16,13 @@ export default async (req, res) => {
     const database = client.db('twitter');
     const users = database.collection('users');
     console.log("Connected to the database");
-    const recentAnalyses = await users
+    const recentAnalyses = (await users
       .find({})
       .sort({ _id: -1 })
-      .limit(15)
-      .toArray();
+      .limit(30)
+      .toArray())
+      .filter(user => Number.isFinite(user.beautyScore))
+      .slice(0, 15);
 
     res.status(200).json(recentAnalyses);
   } catch (error) {

@@ -17,11 +17,13 @@ export default async (req, res) => {
     const users = database.collection('users');
     console.log("Connected to the database");
     
-    const top100 = await users
+    const top100 = (await users
       .find({}, { projection: { username: 1, beautyScore: 1, profileColor: 1, profileImageUrl: 1 } })
       .sort({ beautyScore: -1 })
-      .limit(100)
-      .toArray();
+      .limit(200)
+      .toArray())
+      .filter(user => Number.isFinite(user.beautyScore))
+      .slice(0, 100);
 
     const totalUsers = await users.countDocuments();
 
