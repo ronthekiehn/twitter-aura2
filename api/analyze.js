@@ -1,8 +1,8 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
 import axios from 'axios';
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import sharp from 'sharp';
 import { getPalette } from 'colorthief';
+import { getUsersCollection } from '../server/mongodb.js';
 
 const prompt = `You are an expert in color theory who describes color palettes with witty, sharp aura labels.
 Look at the following color palette and describe its aura.
@@ -14,15 +14,6 @@ Rules:
 - no explanations, alternatives, prefixes, or suffixes
 Output format: word1 word2
 `;
-
-const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
 
 const socialDataApiKey = process.env.SOCIALDATA_API_KEY;
 const apiKey = process.env.GEMINI_API_KEY;
@@ -169,9 +160,7 @@ export default async (req, res) => {
 
   console.log(requestedUsername);
   try {
-    await client.connect();
-    const database = client.db('twitter');
-    const users = database.collection('users');
+    const users = await getUsersCollection();
 
     const socialDataResponse = await axios.get(`https://api.socialdata.tools/twitter/user/${encodeURIComponent(requestedUsername)}`, {
       headers: { 
@@ -256,7 +245,5 @@ export default async (req, res) => {
     } else {
       res.status(500).json({ error: 'An error occurred' });
     }
-  } finally {
-    await client.close();
   }
 };

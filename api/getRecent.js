@@ -1,22 +1,11 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
-
-const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+import { getUsersCollection } from '../server/mongodb.js';
 
 const RECENT_LIMIT = 25;
 
 export default async (req, res) => {
   console.log("GET /api/getRecent");
   try {
-    await client.connect();
-    const database = client.db('twitter');
-    const users = database.collection('users');
+    const users = await getUsersCollection();
     console.log("Connected to the database");
 
     const recentAnalyses = await users
@@ -40,6 +29,10 @@ export default async (req, res) => {
       .limit(RECENT_LIMIT)
       .toArray();
 
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=0, s-maxage=10, stale-while-revalidate=20'
+    );
     res.status(200).json(
       recentAnalyses.map((analysis) => ({
         ...analysis,
@@ -49,7 +42,5 @@ export default async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred' });
-  } finally {
-    await client.close();
   }
 };
